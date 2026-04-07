@@ -6,11 +6,25 @@ import bcrypt from 'bcryptjs'
 // POST /api/checkin/admin/change-pin - Reset user password (admin only)
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json()
+    const { email, newPassword: customPassword } = await request.json()
 
     if (!email) {
       return NextResponse.json(
         { error: 'Email is required' },
+        { status: 400 }
+      )
+    }
+
+    if (!customPassword) {
+      return NextResponse.json(
+        { error: 'New password is required' },
+        { status: 400 }
+      )
+    }
+
+    if (customPassword.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters' },
         { status: 400 }
       )
     }
@@ -29,8 +43,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate new random password
-    const newPassword = generateRandomPassword()
+    // Use provided password
+    const newPassword = customPassword
     const newPasswordHash = await bcrypt.hash(newPassword, 10)
     const encryptedPasswordHash = encryptData(newPasswordHash)
 

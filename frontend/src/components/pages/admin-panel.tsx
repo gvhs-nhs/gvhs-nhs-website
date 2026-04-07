@@ -6,10 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, Users, LogOut, Lightbulb, Eye, EyeOff, Trash2, Settings, Bus, Building2, Bell } from "lucide-react";
+import { Shield, Users, LogOut, Lightbulb, Eye, EyeOff, Trash2, Settings, Building2, Bell } from "lucide-react";
 import { UserCard } from "@/components/admin/UserCard";
 import { ActiveUsersPanel } from "@/components/admin/ActiveUsersPanel";
-import { TransportationManagement } from "@/components/admin/TransportationManager";
 import { NHSElementaryVisits } from "@/components/admin/NHSElementaryVisits";
 import { AdminOrganizationManager } from "@/components/admin/AdminOrganizationManager";
 import { AdminAnnouncementManager } from "@/components/admin/AdminAnnouncementManager";
@@ -208,24 +207,84 @@ export function AdminPanel() {
     }
   };
 
-  const handleChangePin = async (email: string) => {
+  const handleChangePin = async (email: string, newPassword?: string) => {
+    // If no password provided, prompt for one
+    if (!newPassword) {
+      const inputPassword = prompt(`Enter new password for ${email} (min 6 characters):`);
+      if (!inputPassword) return; // User cancelled
+      if (inputPassword.length < 6) {
+        setMessage("Error: Password must be at least 6 characters");
+        return;
+      }
+      newPassword = inputPassword;
+    }
+
     try {
       const response = await fetch("/api/checkin/admin/change-pin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, newPassword }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(`Successfully reset password for ${email}. New password: ${data.newPassword}`);
+        setMessage(`Successfully reset password for ${email}. New password: ${newPassword}`);
         fetchUsers();
       } else {
         setMessage(data.error || "Failed to reset password");
       }
     } catch (error) {
       console.error("Error resetting password:", error);
+      setMessage("Error connecting to server");
+    }
+  };
+
+  const handleResetNhsId = async (userId: string, email: string, newNhsId?: string) => {
+    // If no NHS ID provided, prompt for one
+    if (!newNhsId) {
+      const inputNhsId = prompt(`Enter new NHS ID for ${email}:`);
+      if (!inputNhsId) return; // User cancelled
+      newNhsId = inputNhsId;
+    }
+
+    try {
+      const response = await fetch("/api/checkin/admin/reset-nhs-id", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, newNhsId }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(`Successfully reset NHS ID for ${email}. New NHS ID: ${newNhsId}`);
+      } else {
+        setMessage(data.error || "Failed to reset NHS ID");
+      }
+    } catch (error) {
+      console.error("Error resetting NHS ID:", error);
+      setMessage("Error connecting to server");
+    }
+  };
+
+  const handleDeleteUserFromGrid = async (userId: string, email: string) => {
+    try {
+      const response = await fetch("/api/checkin/admin/delete-user", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(`Successfully deleted user ${email} from all systems`);
+      } else {
+        setMessage(data.error || "Failed to delete user");
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
       setMessage("Error connecting to server");
     }
   };
@@ -428,10 +487,6 @@ export function AdminPanel() {
               <Users className="w-4 h-4" />
               Elementary
             </TabsTrigger>
-            <TabsTrigger value="transportation" className="flex items-center gap-2">
-              <Bus className="w-4 h-4" />
-              Transport
-            </TabsTrigger>
           </TabsList>
 
           {/* Tab 1: General Admin */}
@@ -538,48 +593,15 @@ export function AdminPanel() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="w-5 h-5 mr-2" />
-                  All Users ({users.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {loading ? (
-                  <div className="text-center py-8">Loading users...</div>
-                ) : users.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">No users registered yet</div>
-                ) : (
-                  <div className="space-y-2">
-                    {users.map((user) => {
-                      const userId = user.user_id || user.userId; // Use database field name
-                      return (
-                        <UserCard
-                          key={userId}
-                          user={user}
-                          onForceCheckout={handleForceCheckout}
-                          onChangePin={handleChangePin}
-                          onDeleteUser={handleDeleteUser}
-                          onToggleExpand={toggleUserExpand}
-                          isExpanded={expandedUserId === userId}
-                          userSessions={userSessions[userId] || []}
-                          userHours={userHours[userId]}
-                          formatDateTime={formatDateTime}
-                          formatDuration={formatDuration}
-                          isDeleting={deletingUserId === userId}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </TabsContent>
 
           {/* Tab: Users Grid */}
           <TabsContent value="users" className="space-y-6">
-            <AdminUsersGrid onChangePin={handleChangePin} />
+            <AdminUsersGrid
+              onChangePin={handleChangePin}
+              onResetNhsId={handleResetNhsId}
+              onDeleteUser={handleDeleteUserFromGrid}
+            />
           </TabsContent>
 
           {/* Tab: Organizations & Events */}
@@ -597,10 +619,6 @@ export function AdminPanel() {
             <NHSElementaryVisits />
           </TabsContent>
 
-          {/* Tab: Transportation */}
-          <TabsContent value="transportation" className="space-y-6">
-            <TransportationManagement />
-          </TabsContent>
         </Tabs>
       </div>
     </div>

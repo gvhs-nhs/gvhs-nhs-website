@@ -13,7 +13,9 @@ import {
   Users,
   ChevronUp,
   ChevronDown,
-  Key
+  Key,
+  RefreshCw,
+  Trash2
 } from 'lucide-react';
 
 interface UserData {
@@ -36,9 +38,11 @@ type FilterStatus = 'all' | 'checked_in' | 'pending';
 
 interface AdminUsersGridProps {
   onChangePin?: (email: string) => void;
+  onResetNhsId?: (userId: string, email: string) => void;
+  onDeleteUser?: (userId: string, email: string) => void;
 }
 
-export function AdminUsersGrid({ onChangePin }: AdminUsersGridProps) {
+export function AdminUsersGrid({ onChangePin, onResetNhsId, onDeleteUser }: AdminUsersGridProps) {
   const [users, setUsers] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -336,6 +340,31 @@ export function AdminUsersGrid({ onChangePin }: AdminUsersGridProps) {
                           title="Reset Password"
                         >
                           <Key className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {onResetNhsId && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => onResetNhsId(user.real_user_id, user.email)}
+                          title="Reset NHS ID"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {onDeleteUser && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                          onClick={() => {
+                            if (confirm(`Are you sure you want to delete ${user.first_name} ${user.last_name}? This will permanently remove:\n\n- User account\n- All check-in/check-out history\n- All volunteer session records\n- Any opportunity suggestions\n\nThis action cannot be undone.`)) {
+                              onDeleteUser(user.real_user_id, user.email);
+                            }
+                          }}
+                          title="Delete User"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       )}
                     </div>

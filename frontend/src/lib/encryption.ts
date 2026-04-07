@@ -5,18 +5,10 @@ import CryptoJS from 'crypto-js';
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'fallback-key-32-chars-long-12345678';
 const ALGORITHM = 'aes-256-gcm';
 
-// Secure data encryption using AES-256-GCM
+// Secure data encryption using CryptoJS AES
 export function encryptData(text: string): string {
   try {
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipher(ALGORITHM, ENCRYPTION_KEY);
-
-    let encrypted = cipher.update(text, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-
-    const authTag = cipher.getAuthTag();
-
-    return iv.toString('hex') + ':' + authTag.toString('hex') + ':' + encrypted;
+    return CryptoJS.AES.encrypt(text, ENCRYPTION_KEY).toString();
   } catch (error) {
     console.error('Encryption failed:', error);
     return text;
@@ -25,26 +17,20 @@ export function encryptData(text: string): string {
 
 export function decryptData(encryptedText: string): string {
   try {
-    if (!encryptedText.includes(':')) {
-      return encryptedText; // Return as-is if not encrypted
+    // Check if it's CryptoJS encrypted (starts with U2Fsd which is base64 for 'Salted')
+    if (encryptedText.startsWith('U2F')) {
+      const bytes = CryptoJS.AES.decrypt(encryptedText, ENCRYPTION_KEY);
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      return decrypted || encryptedText;
     }
 
-    const parts = encryptedText.split(':');
-    if (parts.length !== 3) {
-      return encryptedText; // Return as-is if format is invalid
+    // Legacy format with colons - return as-is since old crypto API is deprecated
+    if (encryptedText.includes(':')) {
+      console.warn('Legacy encrypted format detected, returning as-is');
+      return encryptedText;
     }
 
-    const _iv = Buffer.from(parts[0], 'hex');
-    const authTag = Buffer.from(parts[1], 'hex');
-    const encrypted = parts[2];
-
-    const decipher = crypto.createDecipher(ALGORITHM, ENCRYPTION_KEY);
-    decipher.setAuthTag(authTag);
-
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-
-    return decrypted;
+    return encryptedText; // Return as-is if not encrypted
   } catch (error) {
     console.error('Decryption failed:', error);
     return encryptedText;

@@ -194,6 +194,13 @@ export function EventCalendar({ onSignup, isAuthenticated }: EventCalendarProps)
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Canvas calendar notice */}
+        <div className="p-3 mb-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <p className="text-xs text-amber-800">
+            <strong>Note:</strong> The Canvas calendar is the most up-to-date source for events and meetings.
+          </p>
+        </div>
+
         {/* Legend */}
         {organizations.length > 0 && (
           <div className="flex flex-wrap gap-3 mb-4 pb-4 border-b">

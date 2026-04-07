@@ -21,6 +21,7 @@ export function Navbar() {
   const primaryNavigation = [
     { name: "Home", href: "/" },
     { name: "Volunteering", href: "/volunteering" },
+    { name: "Gallery", href: "/gallery" },
     { name: "Eligibility", href: "/eligibility" },
     { name: "Check-in", href: "/tutor/checkin" },
     { name: "Tutor Status", href: "/tutor/status" },
