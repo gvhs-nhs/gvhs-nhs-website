@@ -298,27 +298,6 @@ export function VolunteeringPage() {
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">150+</div>
-              <div className="text-gray-600">Hours Served This Year</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">45</div>
-              <div className="text-gray-600">Active Volunteers</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">{organizations.length}</div>
-              <div className="text-gray-600">Partner Organizations</div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Organizations Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

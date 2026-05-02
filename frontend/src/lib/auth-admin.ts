@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-const SECRET_KEY = process.env.ADMIN_SECRET_KEY || 'your-super-secret-admin-key-change-this-in-prod';
+const SECRET_KEY = process.env.ADMIN_SECRET_KEY!;
 const key = new TextEncoder().encode(SECRET_KEY);
 
 export async function signAdminToken(): Promise<string> {

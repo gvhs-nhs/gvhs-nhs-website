@@ -38,7 +38,6 @@ export async function GET() {
       .order('sort_order', { ascending: true });
 
     if (error) {
-      console.log('Organizations table may not exist, returning defaults:', error.message);
       return NextResponse.json(defaultOrganizations.map((org, i) => ({
         id: `default-${i}`,
         ...org,

@@ -80,7 +80,6 @@ export async function GET(request: NextRequest) {
           .single();
 
         if (error || !userTransportation) {
-          console.log('No transportation data found for user, returning mock matches');
           // Return mock matches based on user type
           return NextResponse.json({
             matches: userTransportation?.is_driver ? mockRiders : mockDrivers,
@@ -102,7 +101,6 @@ export async function GET(request: NextRequest) {
         });
 
       } catch (dbError) {
-        console.log('Database not available, returning mock matches:', dbError);
         // Fallback to mock data if database isn't available
         return NextResponse.json({
           matches: mockRiders, // Default to showing riders
@@ -122,7 +120,6 @@ export async function GET(request: NextRequest) {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.log('Transportation table may not exist, returning mock data:', error);
         return NextResponse.json({
           requests: [],
           drivers: mockDrivers,
@@ -142,7 +139,6 @@ export async function GET(request: NextRequest) {
       });
 
     } catch (dbError) {
-      console.log('Database connection error, returning mock data:', dbError);
       return NextResponse.json({
         requests: [],
         drivers: mockDrivers,
@@ -208,7 +204,6 @@ export async function DELETE(request: NextRequest) {
         .eq('nhs_user_id', userId);
 
       if (error) {
-        console.log('Transportation table may not exist:', error);
         return NextResponse.json({
           message: 'Transportation request canceled (mock response)',
           note: 'Database table not available'
@@ -220,7 +215,6 @@ export async function DELETE(request: NextRequest) {
       });
 
     } catch (dbError) {
-      console.log('Database error, returning mock response:', dbError);
       return NextResponse.json({
         message: 'Transportation request canceled (mock response)',
         note: 'Database not available'

@@ -19,7 +19,6 @@ const AUTO_LOGOUT_TIMES = [
 // POST /api/checkin/admin/auto-logout - Automatically log out all users at scheduled times
 export async function POST(_request: NextRequest) {
   try {
-    console.log('Auto-logout triggered...')
 
     // Get current time in EST
     const now = new Date()
@@ -30,7 +29,6 @@ export async function POST(_request: NextRequest) {
       hour12: false
     }).format(now)
 
-    console.log(`Current EST time: ${estTime}`)
 
     // Check if current time matches any auto-logout time
     const shouldLogout = AUTO_LOGOUT_TIMES.includes(estTime)
@@ -43,7 +41,6 @@ export async function POST(_request: NextRequest) {
       })
     }
 
-    console.log(`Auto-logout triggered at ${estTime} EST`)
 
     // Get all currently checked-in users
     const { data: activeUsers, error: fetchError } = await supabase
@@ -66,7 +63,6 @@ export async function POST(_request: NextRequest) {
       })
     }
 
-    console.log(`Found ${activeUsers.length} users to auto-logout`)
 
     const checkedOutUsers = []
     const checkoutTime = new Date().toISOString()
@@ -110,14 +106,12 @@ export async function POST(_request: NextRequest) {
           duration: Math.floor(duration / 1000 / 60) // Duration in minutes
         })
 
-        console.log(`Auto-logout completed for user ${activeUser.user_id}`)
 
       } catch (userError) {
         console.error(`Error processing auto-logout for user ${activeUser.user_id}:`, userError)
       }
     }
 
-    console.log(`Auto-logout complete. Processed ${checkedOutUsers.length} users`)
 
     return NextResponse.json({
       message: `Auto-logout completed at ${estTime} EST`,

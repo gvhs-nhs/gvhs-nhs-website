@@ -38,7 +38,6 @@ export async function GET(request: NextRequest) {
     const { data: events, error } = await query;
 
     if (error) {
-      console.log('Calendar events query error:', error.message);
       return NextResponse.json([]);
     }
 

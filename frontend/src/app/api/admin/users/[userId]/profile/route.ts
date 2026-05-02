@@ -133,7 +133,6 @@ export async function GET(
         };
       }
     } catch (e) {
-      console.log('Error fetching session history for hours:', e);
       hoursError = e;
     }
 
@@ -153,7 +152,6 @@ export async function GET(
       sessions = result.data;
       sessionsError = result.error;
     } catch (e) {
-      console.log('session_history table not available:', e);
       sessionsError = e;
     }
 
@@ -172,7 +170,6 @@ export async function GET(
       volunteerInterests = result.data;
       volunteerError = result.error;
     } catch (e) {
-      console.log('volunteer_interest_submissions table not available:', e);
       volunteerError = e;
     }
 
@@ -188,7 +185,6 @@ export async function GET(
       suggestions = result.data;
       suggestionsError = result.error;
     } catch (e) {
-      console.log('opportunity_suggestions table not available:', e);
       suggestionsError = e;
     }
 
@@ -204,7 +200,6 @@ export async function GET(
       monthlyService = result.data;
       monthlyServiceError = result.error;
     } catch (e) {
-      console.log('monthly_service_submissions table not available:', e);
       monthlyServiceError = e;
     }
 
@@ -233,7 +228,6 @@ export async function GET(
         ispError = error;
       }
     } catch (e) {
-      console.log('ISP tables not available:', e);
       ispError = e;
     }
 
@@ -255,7 +249,6 @@ export async function GET(
       eventSignups = result.data;
       eventSignupsError = result.error;
     } catch (e) {
-      console.log('event_signups table not available:', e);
       eventSignupsError = e;
     }
 

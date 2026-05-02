@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.log('Announcements query error:', error.message);
       return NextResponse.json([]);
     }
 

@@ -1,5 +1,4 @@
 "use client";
-// Force update - Sign In button changes
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -27,9 +26,7 @@ export function Navbar() {
   ];
 
   // Secondary navigation - only visible when logged in
-  const secondaryNavigation = [
-    { name: "Profile", href: "/tutor/profile", requireAuth: true },
-  ];
+  const secondaryNavigation: { name: string; href: string; requireAuth: boolean }[] = [];
 
   const handleLoginClick = () => {
     setShowLoginModal(true);

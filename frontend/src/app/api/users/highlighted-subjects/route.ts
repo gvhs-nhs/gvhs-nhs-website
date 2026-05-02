@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
 
     // Check environment configuration
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.log('Supabase not configured, returning mock highlighted subjects for demo');
 
       // Return mock data based on user ID for demo
       const mockUserSubjects: Record<string, { tutoring: string[], highlighted: string[] }> = {
@@ -53,7 +52,6 @@ export async function GET(request: NextRequest) {
         .single();
 
       if (error || !user) {
-        console.log('User not found or table missing:', error);
         // Return empty arrays as defaults
         return NextResponse.json({
           highlightedSubjects: [],
@@ -72,7 +70,6 @@ export async function GET(request: NextRequest) {
           : JSON.parse(user.highlighted_subjects || '[]');
       }
     } catch (e) {
-      console.log('Error parsing highlighted_subjects:', e);
     }
 
     try {
@@ -82,7 +79,6 @@ export async function GET(request: NextRequest) {
           : JSON.parse(user.tutoring_subjects || '[]');
       }
     } catch (e) {
-      console.log('Error parsing tutoring_subjects:', e);
     }
 
       return NextResponse.json({
@@ -141,7 +137,6 @@ export async function POST(request: NextRequest) {
 
     // Check environment configuration
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.log('Supabase not configured, returning mock success for highlighted subjects');
       return NextResponse.json({
         message: 'Highlighted subjects saved successfully (mock)',
         highlightedSubjects: highlightedSubjects
@@ -150,7 +145,6 @@ export async function POST(request: NextRequest) {
 
     // Validate NHS User ID format (flexible for development)
     if (userId && !/^\d{6}$/.test(userId)) {
-      console.log('Invalid user ID format, but proceeding with mock save');
       return NextResponse.json({
         message: 'Highlighted subjects saved successfully (mock)',
         highlightedSubjects: highlightedSubjects
@@ -170,7 +164,6 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (error) {
-        console.log('Error updating highlighted subjects, returning mock success:', error.message);
         return NextResponse.json({
           message: 'Highlighted subjects saved successfully (mock)',
           highlightedSubjects: highlightedSubjects
@@ -183,7 +176,6 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (dbError) {
-      console.log('Database error in highlighted subjects POST API, returning mock:', dbError);
       return NextResponse.json({
         message: 'Highlighted subjects saved successfully (mock)',
         highlightedSubjects: highlightedSubjects
@@ -191,7 +183,6 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.log('Error in highlighted subjects POST API, returning mock:', error);
     return NextResponse.json({
       message: 'Highlighted subjects saved successfully (mock)',
       highlightedSubjects: highlightedSubjects || []

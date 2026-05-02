@@ -13,9 +13,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check for master admin override first
-    const masterAdminPin = process.env.MASTER_ADMIN_PIN || "EMERGENCY_OVERRIDE_2024";
-    if (pin === masterAdminPin) {
+    const masterAdminPin = process.env.MASTER_ADMIN_PIN;
+    if (masterAdminPin && pin === masterAdminPin) {
       await setAdminCookie();
       return NextResponse.json({
         success: true,
@@ -23,8 +22,10 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Check against main admin PIN (simple string comparison)
-    const adminPin = process.env.ADMIN_PIN || "Volunteeringisgreat";
+    const adminPin = process.env.ADMIN_PIN;
+    if (!adminPin) {
+      return NextResponse.json({ error: 'Admin PIN not configured' }, { status: 500 })
+    }
     if (pin === adminPin) {
       await setAdminCookie();
       return NextResponse.json({

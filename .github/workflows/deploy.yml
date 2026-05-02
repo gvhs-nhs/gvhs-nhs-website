@@ -32,6 +32,7 @@ jobs:
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
           ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
           USER_SESSION_SECRET: ${{ secrets.USER_SESSION_SECRET }}
+          ADMIN_PIN: ${{ secrets.ADMIN_PIN }}
           NETLIFY_SITE_ID: 8beaade1-6ba9-4efa-80e1-53c3069cd8ab
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: |

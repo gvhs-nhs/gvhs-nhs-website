@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import CryptoJS from 'crypto-js';
 
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'fallback-key-32-chars-long-12345678';
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY!;
 const ALGORITHM = 'aes-256-gcm';
 
 // Secure data encryption using CryptoJS AES

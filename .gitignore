@@ -38,3 +38,13 @@ Thumbs.db
 
 # Git worktrees
 .worktrees/
+
+# Local Netlify folder
+.netlify
+
+# Claude/agent artifacts
+.claude/
+.playwright-mcp/
+.superpowers/
+.swarm/
+.mcp.json

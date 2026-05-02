@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-const USER_SECRET_KEY = process.env.USER_SESSION_SECRET || 'user-session-secret-change-me';
+const USER_SECRET_KEY = process.env.USER_SESSION_SECRET!;
 const key = new TextEncoder().encode(USER_SECRET_KEY);
 
 interface UserSessionPayload {

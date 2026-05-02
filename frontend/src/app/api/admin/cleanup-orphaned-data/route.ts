@@ -11,7 +11,6 @@ interface CleanupResults {
 // POST /api/admin/cleanup-orphaned-data - Clean up orphaned records where user no longer exists
 export async function POST(_request: NextRequest) {
   try {
-    console.log('Starting cleanup of orphaned data...')
 
     const cleanupResults: CleanupResults = {
       before: {},
@@ -39,7 +38,6 @@ export async function POST(_request: NextRequest) {
       active_checkins: beforeCounts[5].count || 0
     }
 
-    console.log('Before cleanup:', cleanupResults.before)
 
     // Get all valid user IDs
     const { data: validUsers, error: usersError } = await supabase
@@ -51,7 +49,6 @@ export async function POST(_request: NextRequest) {
     }
 
     const validUserIds = validUsers?.map(u => u.user_id) || []
-    console.log(`Found ${validUserIds.length} valid users`)
 
     // Clean up session_history
     const { data: orphanedSessions, error: sessionHistoryError } = await supabase
@@ -73,7 +70,6 @@ export async function POST(_request: NextRequest) {
           cleanupResults.errors.push(`session_history delete error: ${deleteSessionError.message}`)
         } else {
           cleanupResults.deleted.session_history = orphanedSessionIds.length
-          console.log(`Deleted ${orphanedSessionIds.length} orphaned session_history records`)
         }
       }
     }
@@ -98,7 +94,6 @@ export async function POST(_request: NextRequest) {
           cleanupResults.errors.push(`checkin_sessions delete error: ${deleteCheckinError.message}`)
         } else {
           cleanupResults.deleted.checkin_sessions = orphanedCheckinIds.length
-          console.log(`Deleted ${orphanedCheckinIds.length} orphaned checkin_sessions records`)
         }
       }
     }
@@ -123,7 +118,6 @@ export async function POST(_request: NextRequest) {
           cleanupResults.errors.push(`opportunity_suggestions delete error: ${deleteSuggestionsError.message}`)
         } else {
           cleanupResults.deleted.opportunity_suggestions = orphanedSuggestionIds.length
-          console.log(`Deleted ${orphanedSuggestionIds.length} orphaned opportunity_suggestions records`)
         }
       }
     }
@@ -148,7 +142,6 @@ export async function POST(_request: NextRequest) {
           cleanupResults.errors.push(`school_visit_signups delete error: ${deleteVisitsError.message}`)
         } else {
           cleanupResults.deleted.school_visit_signups = orphanedVisitIds.length
-          console.log(`Deleted ${orphanedVisitIds.length} orphaned school_visit_signups records`)
         }
       }
     }
@@ -173,7 +166,6 @@ export async function POST(_request: NextRequest) {
           cleanupResults.errors.push(`active_checkins delete error: ${deleteActiveError.message}`)
         } else {
           cleanupResults.deleted.active_checkins = orphanedActiveIds.length
-          console.log(`Deleted ${orphanedActiveIds.length} orphaned active_checkins records`)
         }
       }
     }
@@ -197,8 +189,6 @@ export async function POST(_request: NextRequest) {
       active_checkins: afterCounts[5].count || 0
     }
 
-    console.log('After cleanup:', cleanupResults.after)
-    console.log('Cleanup complete!')
 
     return NextResponse.json({
       message: 'Cleanup completed successfully',

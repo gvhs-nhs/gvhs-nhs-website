@@ -121,7 +121,6 @@ export async function GET(request: NextRequest) {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.log('Transportation table not available, using mock data:', error);
         return getMockData(schoolFilter, typeFilter);
       }
 
@@ -191,7 +190,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(responseData);
 
     } catch (dbError) {
-      console.log('Database connection error, using mock data:', dbError);
       return getMockData(schoolFilter, typeFilter);
     }
 
