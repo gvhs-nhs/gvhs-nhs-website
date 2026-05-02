@@ -9,7 +9,6 @@ import {
   Heart,
   Mail,
   Calendar,
-  CheckCircle
 } from "lucide-react";
 import Link from "next/link";
 import { AnnouncementsBanner } from "@/components/home/AnnouncementsBanner";
@@ -23,74 +22,28 @@ export function HomePage() {
   const pillars = [
     {
       name: "Scholarship",
-      icon: <BookOpen className="w-8 h-8" />,
-      color: "bg-blue-500",
-      borderColor: "border-blue-500",
-      what: "Academic excellence and intellectual curiosity",
-      howToDemonstrate: [
-        "Maintain a cumulative GPA of 3.75 or higher",
-        "Challenge yourself with rigorous coursework",
-        "Show enthusiasm for learning beyond grades"
-      ],
-      nhsActivities: [
-        "Peer tutoring program in the library",
-        "Study groups for challenging courses",
-        "Academic mentorship for underclassmen"
-      ]
+      icon: <BookOpen className="w-10 h-10" />,
+      gradient: "from-blue-500 to-blue-700",
+      glow: "shadow-blue-500/25",
     },
     {
       name: "Service",
-      icon: <Heart className="w-8 h-8" />,
-      color: "bg-green-500",
-      borderColor: "border-green-500",
-      what: "Voluntary contributions to school and community without financial benefit",
-      howToDemonstrate: [
-        "Consistent, sustained volunteer work (not just one-time events)",
-        "Service to BOTH school AND local community",
-        "Unpaid work helping others outside your family"
-      ],
-      nhsActivities: [
-        "Elementary school reading visits",
-        "Kids in Motion youth sports support",
-        "Senior citizen tech assistance (GVCO)",
-        "Chapter service projects"
-      ]
+      icon: <Heart className="w-10 h-10" />,
+      gradient: "from-emerald-500 to-emerald-700",
+      glow: "shadow-emerald-500/25",
     },
     {
       name: "Leadership",
-      icon: <Users className="w-8 h-8" />,
-      color: "bg-yellow-500",
-      borderColor: "border-yellow-500",
-      what: "Taking initiative and inspiring others to achieve shared goals",
-      howToDemonstrate: [
-        "Active participation in positions of responsibility",
-        "Show initiative, not just hold elected positions",
-        "Set high standards for yourself and others"
-      ],
-      nhsActivities: [
-        "NHS officer positions",
-        "Leading service project teams",
-        "Mentoring new members",
-        "Organizing school-wide events"
-      ]
+      icon: <Users className="w-10 h-10" />,
+      gradient: "from-amber-500 to-amber-700",
+      glow: "shadow-amber-500/25",
     },
     {
       name: "Character",
-      icon: <Award className="w-8 h-8" />,
-      color: "bg-purple-500",
-      borderColor: "border-purple-500",
-      what: "Integrity, ethics, cooperation, and positive behavior",
-      howToDemonstrate: [
-        "Maintain a clean discipline record",
-        "Be honest and ethical in all activities",
-        "Demonstrate respect for teachers and peers"
-      ],
-      nhsActivities: [
-        "Role modeling for younger students",
-        "Upholding NHS values daily",
-        "Faculty recommendations and endorsements"
-      ]
-    }
+      icon: <Award className="w-10 h-10" />,
+      gradient: "from-purple-500 to-purple-700",
+      glow: "shadow-purple-500/25",
+    },
   ];
 
   return (
@@ -115,59 +68,22 @@ export function HomePage() {
         {/* Announcements */}
         <AnnouncementsBanner />
 
-        {/* The Four Pillars - Expanded */}
+        {/* The Four Pillars */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
             The Four Pillars of NHS
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {pillars.map((pillar) => (
-              <Card key={pillar.name} className={`border-l-4 ${pillar.borderColor}`}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-3 rounded-full ${pillar.color} text-white`}>
-                      {pillar.icon}
-                    </div>
-                    <CardTitle className="text-xl">{pillar.name}</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* What it is */}
-                  <div>
-                    <p className="text-gray-700 font-medium">{pillar.what}</p>
-                  </div>
-
-                  {/* How to demonstrate */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                      How to Demonstrate for Eligibility:
-                    </h4>
-                    <ul className="space-y-1">
-                      {pillar.howToDemonstrate.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
-                          <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* NHS Activities */}
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                      NHS Activities That Exemplify This:
-                    </h4>
-                    <ul className="space-y-1">
-                      {pillar.nhsActivities.map((activity, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
-                          <span className="w-1.5 h-1.5 bg-royal-blue rounded-full mt-2 flex-shrink-0"></span>
-                          <span>{activity}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
+              <div
+                key={pillar.name}
+                className={`group relative flex flex-col items-center justify-center p-8 rounded-2xl bg-gradient-to-br ${pillar.gradient} text-white shadow-lg ${pillar.glow} hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-default aspect-square`}
+              >
+                <div className="mb-4 p-4 bg-white/20 rounded-full backdrop-blur-sm group-hover:bg-white/30 transition-colors duration-300">
+                  {pillar.icon}
+                </div>
+                <h3 className="text-lg font-bold tracking-wide">{pillar.name}</h3>
+              </div>
             ))}
           </div>
         </section>
