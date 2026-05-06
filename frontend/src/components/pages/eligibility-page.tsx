@@ -1,13 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, BookOpen, Users, Heart, Award, Calendar, X, ArrowRight } from "lucide-react";
+import { CheckCircle, BookOpen, Users, Heart, Award, Calendar, X, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 export function EligibilityPage() {
   const [showJoinPopup, setShowJoinPopup] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
+  const [rotation, setRotation] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const frontIndex = ((Math.round(rotation / 90) % 4) + 4) % 4;
+
+  const rotateTo = useCallback((direction: 'left' | 'right') => {
+    setRotation(prev => prev + (direction === 'right' ? 90 : -90));
+  }, []);
 
   // Handle backdrop click and escape key
   useEffect(() => {
@@ -38,7 +46,10 @@ export function EligibilityPage() {
         { text: "This is the first requirement to become a candidate", bold: false },
         { text: "Honor roll alone is not sufficient - you need to demonstrate the other pillars as well", bold: false }
       ],
-      color: "bg-blue-500"
+      color: "bg-blue-500",
+      hoverColor: "bg-blue-50",
+      borderColor: "border-blue-400",
+      dotColor: "bg-blue-500"
     },
     {
       name: "Leadership",
@@ -50,7 +61,10 @@ export function EligibilityPage() {
         { text: "Not just an elected position - show WHY you were chosen to lead", bold: false },
         { text: "Provide specific examples of HOW you supported others with your leadership", bold: false }
       ],
-      color: "bg-yellow-500"
+      color: "bg-yellow-500",
+      hoverColor: "bg-yellow-50",
+      borderColor: "border-yellow-400",
+      dotColor: "bg-yellow-500"
     },
     {
       name: "Service",
@@ -62,7 +76,10 @@ export function EligibilityPage() {
         { text: "Consistent, sustained service is valued over one-time events", bold: false },
         { text: "Quality over quantity - detailed examples matter more than number of activities", bold: false }
       ],
-      color: "bg-green-500"
+      color: "bg-green-500",
+      hoverColor: "bg-green-50",
+      borderColor: "border-green-400",
+      dotColor: "bg-green-500"
     },
     {
       name: "Character",
@@ -74,7 +91,10 @@ export function EligibilityPage() {
         { text: "Discipline referrals may affect your candidacy", bold: false },
         { text: "Character is evaluated through faculty comments and recommendations", bold: false }
       ],
-      color: "bg-purple-500"
+      color: "bg-purple-500",
+      hoverColor: "bg-purple-50",
+      borderColor: "border-purple-400",
+      dotColor: "bg-purple-500"
     }
   ];
 
@@ -123,36 +143,100 @@ export function EligibilityPage() {
           </CardContent>
         </Card>
 
-        {/* The Four Pillars */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+        {/* The Four Pillars — 3D Carousel */}
+        <h2 className="text-2xl font-bold text-gray-900 mb-3 text-center">
           The Four Pillars of NHS
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          {pillars.map((pillar) => (
-            <Card key={pillar.name} className="h-full">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-full ${pillar.color} text-white`}>
-                    {pillar.icon}
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl">{pillar.name}</CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">{pillar.description}</p>
-                  </div>
+        <p className="text-gray-500 text-sm text-center mb-6">Hover the front pillar for details</p>
+
+        <div className="relative mb-10">
+          {/* Carousel controls */}
+          <div className="flex justify-center items-center gap-6 mb-4">
+            <button
+              onClick={() => rotateTo('left')}
+              className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <span className="text-sm font-medium text-gray-500">
+              {pillars[frontIndex].name}
+            </span>
+            <button
+              onClick={() => rotateTo('right')}
+              className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </button>
+          </div>
+
+          {/* 3D Scene */}
+          <div className="flex justify-center">
+            <div
+              className="relative w-32 md:w-40 h-56 md:h-64"
+              style={{ perspective: '800px' }}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              <div
+                className="absolute inset-0 transition-transform duration-700 ease-out"
+                style={{
+                  transformStyle: 'preserve-3d',
+                  transform: `rotateY(${-rotation}deg)`,
+                }}
+              >
+                {pillars.map((pillar, idx) => {
+                  const angle = idx * 90;
+                  return (
+                    <div
+                      key={pillar.name}
+                      className="absolute inset-0 flex flex-col items-center justify-center backface-hidden"
+                      style={{
+                        transform: `rotateY(${angle}deg) translateZ(120px)`,
+                        backfaceVisibility: 'hidden',
+                      }}
+                    >
+                      {/* Pillar shape */}
+                      <div className="flex flex-col items-center">
+                        <div className={`w-20 md:w-24 h-5 md:h-6 ${pillar.color} rounded-t-md shadow-md`} />
+                        <div className={`w-[5.25rem] md:w-[6.25rem] h-2 ${pillar.color} opacity-80`} />
+                        <div className={`w-16 md:w-20 h-32 md:h-40 ${pillar.color} opacity-90 flex items-center justify-center`}>
+                          <span className="text-white">{pillar.icon}</span>
+                        </div>
+                        <div className={`w-[5.25rem] md:w-[6.25rem] h-2 ${pillar.color} opacity-80`} />
+                        <div className={`w-20 md:w-24 h-5 md:h-6 ${pillar.color} rounded-b-md shadow-md`} />
+                      </div>
+                      <p className="mt-3 text-xs md:text-sm font-bold text-gray-700 tracking-wide uppercase">
+                        {pillar.name}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Detail card for front pillar — shown on hover */}
+          <div className={`mt-6 transition-all duration-400 ease-out overflow-hidden ${isHovering ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className={`max-w-lg mx-auto ${pillars[frontIndex].hoverColor} ${pillars[frontIndex].borderColor} border-2 rounded-xl p-5`}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`p-2 rounded-full ${pillars[frontIndex].color} text-white`}>
+                  {pillars[frontIndex].icon}
                 </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  {pillar.details.map((detail, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className={`w-1.5 h-1.5 ${detail.bold ? 'bg-royal-blue' : 'bg-gray-400'} rounded-full mt-2 flex-shrink-0`}></span>
-                      <span className={detail.bold ? 'font-bold text-gray-900' : ''}>{detail.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
+                <div>
+                  <h3 className="font-bold text-gray-900">{pillars[frontIndex].name}</h3>
+                  <p className="text-sm text-gray-600">{pillars[frontIndex].description}</p>
+                </div>
+              </div>
+              <ul className="space-y-2 text-sm text-gray-700">
+                {pillars[frontIndex].details.map((detail, detailIdx) => (
+                  <li key={detailIdx} className="flex items-start gap-2">
+                    <span className={`w-1.5 h-1.5 ${detail.bold ? pillars[frontIndex].dotColor : 'bg-gray-400'} rounded-full mt-2 flex-shrink-0`} />
+                    <span className={detail.bold ? 'font-semibold text-gray-900' : ''}>{detail.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
 
         {/* Timeline */}

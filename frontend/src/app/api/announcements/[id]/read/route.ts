@@ -27,7 +27,7 @@ export async function POST(
     }
 
     // Upsert to handle duplicates gracefully
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('announcement_read_receipts')
       .upsert(
         {
@@ -40,16 +40,14 @@ export async function POST(
           onConflict: 'announcement_id,user_id',
           ignoreDuplicates: true
         }
-      )
-      .select()
-      .single();
+      );
 
-    if (error && error.code !== '23505') { // Ignore unique violation errors
+    if (error && error.code !== '23505') {
       console.error('Error recording read receipt:', error);
       return NextResponse.json({ error: 'Failed to record read receipt' }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error in read receipt POST:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

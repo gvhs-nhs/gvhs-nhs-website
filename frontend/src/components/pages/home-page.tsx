@@ -11,19 +11,13 @@ import {
   Calendar,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { AnnouncementsBanner } from "@/components/home/AnnouncementsBanner";
 import { EventCalendar } from "@/components/calendar/EventCalendar";
 import { useAuth } from "@/hooks/useAuth";
 
 export function HomePage() {
   const { isAuthenticated } = useAuth();
-
-  const pillars = [
-    { name: "Scholarship", icon: <BookOpen className="w-7 h-7" />, color: "bg-blue-600", hoverColor: "bg-blue-50", textColor: "text-blue-700", info: "Maintain a 3.75+ GPA and challenge yourself with rigorous coursework." },
-    { name: "Service", icon: <Heart className="w-7 h-7" />, color: "bg-emerald-600", hoverColor: "bg-emerald-50", textColor: "text-emerald-700", info: "Volunteer in school and community — consistent, sustained, unpaid work." },
-    { name: "Leadership", icon: <Users className="w-7 h-7" />, color: "bg-amber-600", hoverColor: "bg-amber-50", textColor: "text-amber-700", info: "Take initiative and inspire others. Lead projects, not just hold titles." },
-    { name: "Character", icon: <Award className="w-7 h-7" />, color: "bg-purple-600", hoverColor: "bg-purple-50", textColor: "text-purple-700", info: "Integrity, ethics, and respect in everything you do." },
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white pt-20 pb-12">
@@ -47,51 +41,39 @@ export function HomePage() {
         {/* Announcements */}
         <AnnouncementsBanner />
 
-        {/* The Four Pillars */}
+        {/* Recent Activity */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-            The Four Pillars of NHS
+          <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">
+            Recent Activity
           </h2>
-          <div className="flex justify-center gap-5 md:gap-8">
-            {pillars.map((pillar) => (
-              <div key={pillar.name} className="group flex flex-col items-center">
-                {/* Capital (top block) */}
-                <div className={`w-20 md:w-24 h-5 md:h-6 ${pillar.color} rounded-t-md shadow-md`} />
-                <div className={`w-[5.25rem] md:w-[6.25rem] h-2 ${pillar.color} opacity-80`} />
-
-                {/* Shaft — splits open on hover to reveal info */}
-                <div className="relative w-16 md:w-20 overflow-hidden">
-                  {/* Left half */}
-                  <div className={`absolute inset-y-0 left-0 w-1/2 ${pillar.color} opacity-90 transition-transform duration-500 ease-out group-hover:-translate-x-full`} />
-                  {/* Right half */}
-                  <div className={`absolute inset-y-0 right-0 w-1/2 ${pillar.color} opacity-90 transition-transform duration-500 ease-out group-hover:translate-x-full`} />
-
-                  {/* Info panel (revealed when shaft splits) */}
-                  <div className={`relative h-40 md:h-52 ${pillar.hoverColor} flex flex-col items-center justify-center px-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-150`}>
-                    <div className={`${pillar.textColor} mb-2`}>
-                      {pillar.icon}
-                    </div>
-                    <p className={`text-[10px] md:text-xs ${pillar.textColor} font-medium text-center leading-tight`}>
-                      {pillar.info}
-                    </p>
-                  </div>
-
-                  {/* Icon overlay (visible when closed) */}
-                  <div className="absolute inset-0 flex items-center justify-center text-white/90 pointer-events-none group-hover:opacity-0 transition-opacity duration-300">
-                    {pillar.icon}
-                  </div>
-                </div>
-
-                {/* Base (bottom block) */}
-                <div className={`w-[5.25rem] md:w-[6.25rem] h-2 ${pillar.color} opacity-80`} />
-                <div className={`w-20 md:w-24 h-5 md:h-6 ${pillar.color} rounded-b-md shadow-md`} />
-
-                {/* Label */}
-                <p className="mt-3 text-xs md:text-sm font-bold text-gray-700 tracking-wide uppercase">
-                  {pillar.name}
-                </p>
-              </div>
-            ))}
+          <p className="text-gray-600 text-center mb-6">
+            Earth Day Elementary Visit — Students colored puzzle pieces to show how their contributions are part of a bigger puzzle
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md">
+              <Image
+                src="/images/earth-day-visit/earth-day-1.jpg"
+                alt="Students coloring puzzle pieces during Earth Day visit"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md">
+              <Image
+                src="/images/earth-day-visit/earth-day-2.jpg"
+                alt="NHS members helping elementary students with Earth Day activity"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative aspect-[4/3] md:aspect-[3/4] rounded-lg overflow-hidden shadow-md">
+              <Image
+                src="/images/earth-day-visit/earth-day-3.jpg"
+                alt="Completed puzzle pieces showing student contributions"
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
         </section>
 
