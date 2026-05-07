@@ -3,8 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { X, UserPlus, User, Mail, Key, AlertCircle, CheckCircle, Loader2, EyeOff } from 'lucide-react';
+import { X, UserPlus, User, Mail, Key, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 interface RegisterModalProps {
@@ -22,8 +21,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     password: '',
     confirmPassword: '',
   });
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [agreeToMorabito, setAgreeToMorabito] = useState(false);
 
   const { register, error, isLoading, clearError } = useAuth();
 
@@ -40,19 +37,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     };
   }, [isOpen]);
 
-  // Handle Anonymous Toggle
-  useEffect(() => {
-    if (isAnonymous) {
-      setFormData(prev => ({
-        ...prev,
-        firstName: 'Anonymous',
-        lastName: 'Student'
-      }));
-    } else {
-      if (formData.firstName === 'Anonymous') setFormData(prev => ({ ...prev, firstName: '' }));
-      if (formData.lastName === 'Student') setFormData(prev => ({ ...prev, lastName: '' }));
-    }
-  }, [isAnonymous]);
 
   if (!isOpen) return null;
 
@@ -80,10 +64,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
       return;
     }
 
-    if (isAnonymous && !agreeToMorabito) {
-      return;
-    }
-
     const registerData = {
       userId: formData.userId,
       firstName: formData.firstName.trim(),
@@ -104,8 +84,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
         password: '',
         confirmPassword: '',
       });
-      setIsAnonymous(false);
-      setAgreeToMorabito(false);
     }
   };
 
@@ -120,18 +98,17 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
       password: '',
       confirmPassword: '',
     });
-    setIsAnonymous(false);
-    setAgreeToMorabito(false);
   };
 
   const passwordsMatch = formData.password === formData.confirmPassword;
+  const validEmail = formData.email.trim().endsWith('@gvsd.org');
   const isFormValid =
     formData.userId.length === 6 &&
     formData.firstName.trim() &&
     formData.lastName.trim() &&
+    validEmail &&
     formData.password.length >= 6 &&
-    passwordsMatch &&
-    (!isAnonymous || agreeToMorabito);
+    passwordsMatch;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -177,71 +154,37 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               )}
             </div>
 
-            {/* Anonymous Toggle */}
-            <div className="flex items-center space-x-2 py-2">
-              <Checkbox
-                id="anonymous"
-                checked={isAnonymous}
-                onCheckedChange={(checked) => setIsAnonymous(checked as boolean)}
+            {/* First Name */}
+            <div className="space-y-1">
+              <Label htmlFor="firstName">First Name *</Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                type="text"
+                value={formData.firstName}
+                onChange={handleChange}
+                placeholder="John"
+                required
               />
-              <Label htmlFor="anonymous" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                <EyeOff className="w-4 h-4 text-gray-500" />
-                Register Anonymously
-              </Label>
             </div>
 
-            {/* First Name */}
-            {!isAnonymous && (
-              <div className="space-y-1">
-                <Label htmlFor="firstName">First Name *</Label>
-                <Input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  placeholder="John"
-                  required
-                />
-              </div>
-            )}
-
             {/* Last Name */}
-            {!isAnonymous && (
-              <div className="space-y-1">
-                <Label htmlFor="lastName">Last Name *</Label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  placeholder="Doe"
-                  required
-                />
-              </div>
-            )}
-
-            {/* Anonymous Agreement */}
-            {isAnonymous && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="agreeMorabito"
-                    checked={agreeToMorabito}
-                    onCheckedChange={(checked) => setAgreeToMorabito(checked as boolean)}
-                    className="mt-1"
-                  />
-                  <Label htmlFor="agreeMorabito" className="text-xs text-amber-900 leading-snug cursor-pointer">
-                    Required: I agree to see Dr. Morabito individually and provide her with my User PIN so she knows who this account belongs to.
-                  </Label>
-                </div>
-              </div>
-            )}
-
-            {/* Email (Optional) */}
             <div className="space-y-1">
-              <Label htmlFor="email">Email (Optional)</Label>
+              <Label htmlFor="lastName">Last Name *</Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                type="text"
+                value={formData.lastName}
+                onChange={handleChange}
+                placeholder="Doe"
+                required
+              />
+            </div>
+
+            {/* School Email */}
+            <div className="space-y-1">
+              <Label htmlFor="email">School Email *</Label>
               <div className="relative">
                 <Input
                   id="email"
@@ -249,13 +192,15 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="student@gvsd.org"
+                  placeholder="jdoe26@gvsd.org"
                   className="pl-10"
+                  required
                 />
                 <div className="absolute left-3 top-3">
                   <Mail className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
+              <p className="text-xs text-gray-500">Must be your @gvsd.org email</p>
             </div>
 
             {/* Password Fields */}

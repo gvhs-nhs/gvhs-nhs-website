@@ -1,21 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, BookOpen, Users, Heart, Award, Calendar, X, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { CheckCircle, BookOpen, Users, Heart, Award, Calendar, X, ArrowRight } from "lucide-react";
 
 export function EligibilityPage() {
   const [showJoinPopup, setShowJoinPopup] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
-  const [rotation, setRotation] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
-
-  const frontIndex = ((Math.round(rotation / 90) % 4) + 4) % 4;
-
-  const rotateTo = useCallback((direction: 'left' | 'right') => {
-    setRotation(prev => prev + (direction === 'right' ? 90 : -90));
-  }, []);
 
   // Handle backdrop click and escape key
   useEffect(() => {
@@ -143,100 +135,33 @@ export function EligibilityPage() {
           </CardContent>
         </Card>
 
-        {/* The Four Pillars — 3D Carousel */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-3 text-center">
+        {/* The Four Pillars */}
+        <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
           The Four Pillars of NHS
         </h2>
-        <p className="text-gray-500 text-sm text-center mb-6">Hover the front pillar for details</p>
 
-        <div className="relative mb-10">
-          {/* Carousel controls */}
-          <div className="flex justify-center items-center gap-6 mb-4">
-            <button
-              onClick={() => rotateTo('left')}
-              className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all"
-            >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            <span className="text-sm font-medium text-gray-500">
-              {pillars[frontIndex].name}
-            </span>
-            <button
-              onClick={() => rotateTo('right')}
-              className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all"
-            >
-              <ChevronRight className="w-5 h-5 text-gray-600" />
-            </button>
-          </div>
-
-          {/* 3D Scene */}
-          <div className="flex justify-center">
-            <div
-              className="relative w-32 md:w-40 h-56 md:h-64"
-              style={{ perspective: '800px' }}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              <div
-                className="absolute inset-0 transition-transform duration-700 ease-out"
-                style={{
-                  transformStyle: 'preserve-3d',
-                  transform: `rotateY(${-rotation}deg)`,
-                }}
-              >
-                {pillars.map((pillar, idx) => {
-                  const angle = idx * 90;
-                  return (
-                    <div
-                      key={pillar.name}
-                      className="absolute inset-0 flex flex-col items-center justify-center backface-hidden"
-                      style={{
-                        transform: `rotateY(${angle}deg) translateZ(120px)`,
-                        backfaceVisibility: 'hidden',
-                      }}
-                    >
-                      {/* Pillar shape */}
-                      <div className="flex flex-col items-center">
-                        <div className={`w-20 md:w-24 h-5 md:h-6 ${pillar.color} rounded-t-md shadow-md`} />
-                        <div className={`w-[5.25rem] md:w-[6.25rem] h-2 ${pillar.color} opacity-80`} />
-                        <div className={`w-16 md:w-20 h-32 md:h-40 ${pillar.color} opacity-90 flex items-center justify-center`}>
-                          <span className="text-white">{pillar.icon}</span>
-                        </div>
-                        <div className={`w-[5.25rem] md:w-[6.25rem] h-2 ${pillar.color} opacity-80`} />
-                        <div className={`w-20 md:w-24 h-5 md:h-6 ${pillar.color} rounded-b-md shadow-md`} />
-                      </div>
-                      <p className="mt-3 text-xs md:text-sm font-bold text-gray-700 tracking-wide uppercase">
-                        {pillar.name}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Detail card for front pillar — shown on hover */}
-          <div className={`mt-6 transition-all duration-400 ease-out overflow-hidden ${isHovering ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className={`max-w-lg mx-auto ${pillars[frontIndex].hoverColor} ${pillars[frontIndex].borderColor} border-2 rounded-xl p-5`}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+          {pillars.map((pillar) => (
+            <div key={pillar.name} className={`rounded-xl border-l-4 ${pillar.borderColor} bg-white shadow-sm hover:shadow-md transition-shadow p-5`}>
               <div className="flex items-center gap-3 mb-3">
-                <div className={`p-2 rounded-full ${pillars[frontIndex].color} text-white`}>
-                  {pillars[frontIndex].icon}
+                <div className={`p-2.5 rounded-lg ${pillar.color} text-white`}>
+                  {pillar.icon}
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900">{pillars[frontIndex].name}</h3>
-                  <p className="text-sm text-gray-600">{pillars[frontIndex].description}</p>
+                  <h3 className="font-bold text-lg text-gray-900">{pillar.name}</h3>
+                  <p className="text-sm text-gray-600">{pillar.description}</p>
                 </div>
               </div>
-              <ul className="space-y-2 text-sm text-gray-700">
-                {pillars[frontIndex].details.map((detail, detailIdx) => (
-                  <li key={detailIdx} className="flex items-start gap-2">
-                    <span className={`w-1.5 h-1.5 ${detail.bold ? pillars[frontIndex].dotColor : 'bg-gray-400'} rounded-full mt-2 flex-shrink-0`} />
+              <ul className="space-y-2 ml-1">
+                {pillar.details.map((detail, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
+                    <span className={`w-1.5 h-1.5 ${detail.bold ? pillar.dotColor : 'bg-gray-300'} rounded-full mt-2 flex-shrink-0`} />
                     <span className={detail.bold ? 'font-semibold text-gray-900' : ''}>{detail.text}</span>
                   </li>
                 ))}
               </ul>
             </div>
-          </div>
+          ))}
         </div>
 
         {/* Timeline */}

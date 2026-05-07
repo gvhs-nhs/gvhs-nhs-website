@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import bcrypt from 'bcryptjs'
-import { encryptData } from '@/lib/encryption'
+import { encryptData, decryptData } from '@/lib/encryption'
 import { z } from 'zod'
 import { rateLimit } from '@/lib/rate-limit'
 import { setUserSessionCookie } from '@/lib/auth-session'
@@ -17,7 +17,7 @@ const registerSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters").regex(/^[a-zA-Z\s-]+$/, "Name contains invalid characters").max(50),
   lastName: z.string().min(2, "Last name must be at least 2 characters").regex(/^[a-zA-Z\s-]+$/, "Name contains invalid characters").max(50),
   customUserId: z.string().length(6, "User ID must be exactly 6 digits").regex(/^\d+$/, "User ID must be numeric"),
-  email: z.string().email("Invalid email address").optional().or(z.literal('')),
+  email: z.string().email("Invalid email address").refine(val => val.endsWith('@gvsd.org'), "Must be a @gvsd.org school email"),
   password: z.string().min(6, "Password must be at least 6 characters").max(100),
 })
 
@@ -45,22 +45,19 @@ export async function POST(request: NextRequest) {
 
     const { firstName, lastName, customUserId, email, password } = validation.data
 
-    // Check if email passes secondary checks (optional vs empty string)
-    let cleanEmail = null;
-    if (email && email.trim() !== "") {
-      cleanEmail = email.toLowerCase().trim();
-      // Check if email is already taken
-      const { data: existingEmail } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', cleanEmail)
-        .single()
+    const cleanEmail = email.toLowerCase().trim();
 
-      if (existingEmail) {
-        return NextResponse.json({
-          message: 'An account with this email already exists. Please use a different email or login with your existing account.'
-        }, { status: 400 })
-      }
+    // Check if email is already taken
+    const { data: existingEmail } = await supabase
+      .from('users')
+      .select('email')
+      .eq('email', cleanEmail)
+      .single()
+
+    if (existingEmail) {
+      return NextResponse.json({
+        message: 'An account with this email already exists. Please use a different email or login with your existing account.'
+      }, { status: 400 })
     }
 
     const fullName = `${firstName} ${lastName}`
@@ -80,16 +77,24 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if the custom user ID is already taken
-    const { data: existingUserId } = await supabase
+    // User IDs are encrypted with random salt, so we must decrypt all and compare
+    const { data: allUsers } = await supabase
       .from('users')
-      .select('*')
-      .eq('user_id', customUserId)
-      .single()
+      .select('user_id')
 
-    if (existingUserId) {
-      return NextResponse.json({
-        message: `User ID "${customUserId}" is already taken. Please choose a different ID.`
-      }, { status: 400 })
+    if (allUsers) {
+      for (const u of allUsers) {
+        try {
+          const decrypted = decryptData(u.user_id)
+          if (decrypted === customUserId) {
+            return NextResponse.json({
+              message: `User ID "${customUserId}" is already taken. Please choose a different ID.`
+            }, { status: 400 })
+          }
+        } catch {
+          continue
+        }
+      }
     }
 
     // Hash password
@@ -99,64 +104,57 @@ export async function POST(request: NextRequest) {
     const encryptedUserId = encryptData(customUserId)
     const encryptedPasswordHash = encryptData(passwordHash)
 
-    // Check if approval is required
-    let isApproved = true;
-    try {
-      const { data: settings } = await supabase
-        .from('system_settings')
-        .select('value')
-        .eq('key', 'require_approval')
-        .single();
-
-      if (settings?.value === true || settings?.value === 'true') {
-        isApproved = false;
-      }
-    } catch (err) {
-      console.warn('Failed to fetch approval settings, defaulting to auto-approve', err);
+    // Create new user
+    const insertData: Record<string, unknown> = {
+      user_id: encryptedUserId,
+      first_name: firstName,
+      last_name: lastName,
+      email: cleanEmail,
+      password_hash: encryptedPasswordHash,
     }
 
-    // Create new user
-    const { data: newUser, error: createError } = await supabase
+    // Try with is_approved first, fall back without if column doesn't exist
+    let newUser = null;
+    let createError = null;
+
+    const { data: d1, error: e1 } = await supabase
       .from('users')
-      .insert({
-        user_id: encryptedUserId,
-        first_name: firstName,
-        last_name: lastName,
-        email: cleanEmail,
-        password_hash: encryptedPasswordHash,
-        is_approved: isApproved
-      })
+      .insert({ ...insertData, is_approved: true })
       .select()
       .single()
+
+    if (e1 && e1.message?.includes('is_approved')) {
+      const { data: d2, error: e2 } = await supabase
+        .from('users')
+        .insert(insertData)
+        .select()
+        .single()
+      newUser = d2;
+      createError = e2;
+    } else {
+      newUser = d1;
+      createError = e1;
+    }
 
     if (createError) {
       console.error('Error creating user:', createError)
       return NextResponse.json(
-        { error: 'Failed to create user' },
+        { error: `Failed to create user: ${createError.message}` },
         { status: 500 }
       )
     }
 
-    // SUCCESS - Set Secure Cookie ONLY if approved
-    if (isApproved) {
-      await setUserSessionCookie(customUserId);
+    // SUCCESS - Set Secure Cookie
+    await setUserSessionCookie(customUserId);
 
-      return NextResponse.json({
-        message: 'Registration successful!',
-        id: newUser.id,
-        userId: customUserId,
-        firstName: firstName,
-        lastName: lastName,
-        email: cleanEmail,
-        isApproved: true
-      })
-    } else {
-      // Account created but pending approval
-      return NextResponse.json({
-        message: 'Registration successful! Your account is pending administrator approval. Please check back later.',
-        isApproved: false
-      }, { status: 201 })
-    }
+    return NextResponse.json({
+      message: 'Registration successful!',
+      id: newUser.id,
+      userId: customUserId,
+      firstName: firstName,
+      lastName: lastName,
+      email: cleanEmail,
+    })
 
   } catch (error) {
     console.error('Error in register API:', error)
