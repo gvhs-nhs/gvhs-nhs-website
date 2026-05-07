@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 import { decryptData, encryptData, generateRandomPassword } from '@/lib/encryption'
 import bcrypt from 'bcryptjs'
 
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email (since admin only sees masked IDs)
-    const { data: user, error: userError } = await supabase
+    const { data: user, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('email', email.toLowerCase())
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     const encryptedPasswordHash = encryptData(newPasswordHash)
 
     // Update user's password
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('users')
       .update({ password_hash: encryptedPasswordHash })
       .eq('id', user.id)

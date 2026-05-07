@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // POST /api/announcements/[id]/read - Mark announcement as read by user
 export async function POST(
@@ -27,7 +27,7 @@ export async function POST(
     }
 
     // Upsert to handle duplicates gracefully
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('announcement_read_receipts')
       .upsert(
         {
@@ -62,7 +62,7 @@ export async function GET(
   try {
     const { id: announcementId } = await params;
 
-    const { data: receipts, error } = await supabase
+    const { data: receipts, error } = await supabaseAdmin
       .from('announcement_read_receipts')
       .select('*')
       .eq('announcement_id', announcementId)

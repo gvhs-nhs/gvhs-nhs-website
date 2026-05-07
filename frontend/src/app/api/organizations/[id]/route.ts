@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // GET /api/organizations/[id] - Get single organization with events
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const { data: organization, error } = await supabase
+    const { data: organization, error } = await supabaseAdmin
       .from('volunteer_organizations')
       .select('*')
       .eq('id', id)
@@ -20,7 +20,7 @@ export async function GET(
     }
 
     // Get events for this organization
-    const { data: events } = await supabase
+    const { data: events } = await supabaseAdmin
       .from('volunteer_events')
       .select('*')
       .eq('organization_id', id)
@@ -46,7 +46,7 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('volunteer_organizations')
       .update({
         name: body.name,
@@ -83,7 +83,7 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('volunteer_organizations')
       .update({ is_active: false })
       .eq('id', id);

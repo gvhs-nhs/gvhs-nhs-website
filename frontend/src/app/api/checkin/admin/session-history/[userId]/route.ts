@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // GET /api/checkin/admin/session-history/[userId] - Get session history for a specific user
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { userId } = await params
 
-    const { data: sessions, error } = await supabase
+    const { data: sessions, error } = await supabaseAdmin
       .from('session_history')
       .select('id, user_id, checked_in_at, checked_out_at, duration_ms, forced_by_admin, created_at')
       .eq('user_id', userId)

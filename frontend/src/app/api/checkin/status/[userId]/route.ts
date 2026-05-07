@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // Disable caching for this route
 export const dynamic = 'force-dynamic'
@@ -13,7 +13,7 @@ export async function GET(
   try {
     const { userId } = await params
 
-    const { data: activeCheckin } = await supabase
+    const { data: activeCheckin } = await supabaseAdmin
       .from('active_checkins')
       .select('*')
       .eq('user_id', userId)

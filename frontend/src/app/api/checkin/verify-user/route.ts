@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 import { verifyUserSession } from '@/lib/auth-session'
 import { rateLimit } from '@/lib/rate-limit'
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const { userId } = session;
 
     // Check if user is already checked in
-    const { data: existingCheckin } = await supabase
+    const { data: existingCheckin } = await supabaseAdmin
       .from('active_checkins')
       .select('*')
       .eq('user_id', userId)

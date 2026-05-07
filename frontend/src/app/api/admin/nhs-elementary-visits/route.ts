@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // GET /api/admin/nhs-elementary-visits - Get all NHS elementary visit registrations for admin management
 export async function GET(request: NextRequest) {
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const rideStatusFilter = searchParams.get('rideStatus');
 
     // Get data from database
-    const { data: submissions, error } = await supabase
+    const { data: submissions, error } = await supabaseAdmin
       .from('volunteer_interest_submissions')
       .select('*')
       .eq('event_id', 'nhs-elementary')

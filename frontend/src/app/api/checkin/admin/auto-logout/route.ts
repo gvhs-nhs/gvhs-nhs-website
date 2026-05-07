@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // Automatic logout times in EST (24-hour format)
 const AUTO_LOGOUT_TIMES = [
@@ -43,7 +43,7 @@ export async function POST(_request: NextRequest) {
 
 
     // Get all currently checked-in users
-    const { data: activeUsers, error: fetchError } = await supabase
+    const { data: activeUsers, error: fetchError } = await supabaseAdmin
       .from('active_checkins')
       .select('user_id, checked_in_at')
 
@@ -73,7 +73,7 @@ export async function POST(_request: NextRequest) {
         const duration = new Date(checkoutTime).getTime() - new Date(activeUser.checked_in_at).getTime()
 
         // Create session history record
-        const { error: sessionError } = await supabase
+        const { error: sessionError } = await supabaseAdmin
           .from('session_history')
           .insert({
             user_id: activeUser.user_id,
@@ -89,7 +89,7 @@ export async function POST(_request: NextRequest) {
         }
 
         // Remove from active checkins
-        const { error: removeError } = await supabase
+        const { error: removeError } = await supabaseAdmin
           .from('active_checkins')
           .delete()
           .eq('user_id', activeUser.user_id)

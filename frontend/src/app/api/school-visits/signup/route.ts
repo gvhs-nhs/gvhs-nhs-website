@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // POST /api/school-visits/signup - Sign up for a school visit
 export async function POST(request: NextRequest) {
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already signed up for this event
-    const { data: existingSignup } = await supabase
+    const { data: existingSignup } = await supabaseAdmin
       .from('school_visit_signups')
       .select('*')
       .eq('user_id', userId)
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the signup
-    const { data: newSignup, error } = await supabase
+    const { data: newSignup, error } = await supabaseAdmin
       .from('school_visit_signups')
       .insert({
         user_id: userId,

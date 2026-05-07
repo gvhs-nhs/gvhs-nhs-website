@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -7,7 +7,7 @@ export const revalidate = 0
 export async function GET(_request: NextRequest) {
   try {
     // Try join query first (requires FK between active_checkins and users)
-    const { data: activeUsers, error } = await supabase
+    const { data: activeUsers, error } = await supabaseAdmin
       .from('active_checkins')
       .select(`
         user_id,
@@ -25,7 +25,7 @@ export async function GET(_request: NextRequest) {
     }
 
     // Fallback: if join fails (missing FK), return checkins without user details
-    const { data: checkins } = await supabase
+    const { data: checkins } = await supabaseAdmin
       .from('active_checkins')
       .select('user_id, checked_in_at')
       .order('checked_in_at', { ascending: false })

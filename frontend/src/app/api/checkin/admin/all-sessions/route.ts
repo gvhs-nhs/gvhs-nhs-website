@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // GET /api/checkin/admin/all-sessions - Get all session history (admin only)
 export async function GET(_request: NextRequest) {
   try {
-    const { data: sessions, error } = await supabase
+    const { data: sessions, error } = await supabaseAdmin
       .from('session_history')
       .select('*')
       .order('checked_in_at', { ascending: false })

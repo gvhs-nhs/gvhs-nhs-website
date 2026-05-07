@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 import { decryptData, maskUserId } from '@/lib/encryption'
 import { verifyAdminSession } from '@/lib/auth-admin';
 
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const currentSemester = getCurrentSemester();
 
     // Get users from the main users table to access encrypted data
-    const { data: users, error } = await supabase
+    const { data: users, error } = await supabaseAdmin
       .from('users')
       .select(`
         *,
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     // Get all monthly service submissions for current month (optional - table may not exist)
     let monthlyServiceUserIds = new Set<string>();
     try {
-      const { data: monthlyServices } = await supabase
+      const { data: monthlyServices } = await supabaseAdmin
         .from('monthly_service_submissions')
         .select('user_id')
         .eq('month', currentMonth);
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     // Get all ISP submissions for current semester (optional - tables may not exist)
     let ispUserIds = new Set<string>();
     try {
-      const { data: ispCheckins } = await supabase
+      const { data: ispCheckins } = await supabaseAdmin
         .from('isp_checkins')
         .select(`
           project_id,
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
     // Get session history for total hours (optional - may fail)
     let sessionHistory: { user_id: string; duration_ms: number }[] | null = null;
     try {
-      const { data } = await supabase
+      const { data } = await supabaseAdmin
         .from('session_history')
         .select('user_id, duration_ms');
       sessionHistory = data;

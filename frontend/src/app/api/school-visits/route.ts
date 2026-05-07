@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // GET /api/school-visits - Get all school visit signups (for admin)
 export async function GET(request: NextRequest) {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const dbSortField = sortFieldMap[sortBy] || 'created_at'
     const ascending = sortOrder === 'asc'
 
-    const { data: signups, error } = await supabase
+    const { data: signups, error } = await supabaseAdmin
       .from('school_visit_signups')
       .select('*')
       .order(dbSortField, { ascending })
@@ -60,7 +60,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('school_visit_signups')
       .delete()
       .eq('id', signupId)

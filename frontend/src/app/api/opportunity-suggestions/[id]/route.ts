@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function PATCH(
   request: NextRequest,
@@ -18,7 +18,7 @@ export async function PATCH(
     }
 
     // Update suggestion status
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('opportunity_suggestions')
       .update({
         status,
@@ -63,7 +63,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('opportunity_suggestions')
       .delete()
       .eq('id', id);

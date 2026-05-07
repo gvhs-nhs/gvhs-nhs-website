@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // Default organizations to seed if table is empty
 const defaultOrganizations = [
@@ -15,7 +15,7 @@ const defaultOrganizations = [
 export async function GET() {
   try {
     // Fetch organizations with their related events
-    const { data: organizations, error } = await supabase
+    const { data: organizations, error } = await supabaseAdmin
       .from('volunteer_organizations')
       .select(`
         *,
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name and slug are required' }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('volunteer_organizations')
       .insert({
         name,

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export async function GET(_request: NextRequest) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('active_checkins')
       .select('user_id')
 

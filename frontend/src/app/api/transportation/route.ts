@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // Mock data for demonstration
 const mockDrivers = [
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     if (type === 'matches' && userId) {
       // Mock proximity matching - in reality this would use geocoding and distance calculation
       try {
-        const { data: userTransportation, error } = await supabase
+        const { data: userTransportation, error } = await supabaseAdmin
           .from('nhs_transportation_requests')
           .select('*')
           .eq('nhs_user_id', userId)
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
 
     // Default: return all transportation requests
     try {
-      const { data: transportationRequests, error } = await supabase
+      const { data: transportationRequests, error } = await supabaseAdmin
         .from('nhs_transportation_requests')
         .select(`
           *,
@@ -198,7 +198,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('nhs_transportation_requests')
         .delete()
         .eq('nhs_user_id', userId);

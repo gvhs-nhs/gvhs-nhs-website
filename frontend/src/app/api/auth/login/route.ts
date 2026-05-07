@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 import bcrypt from 'bcryptjs'
 import { decryptData } from '@/lib/encryption'
 import { rateLimit } from '@/lib/rate-limit'
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       // Get all users and decrypt their user IDs to find a match
       // Note: This is inefficient but necessary with app-level encryption. 
       // In a real production app with millions of users, we'd hash the ID separately for lookup.
-      const { data: allUsers } = await supabase
+      const { data: allUsers } = await supabaseAdmin
         .from('users')
         .select('*')
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // If not found by ID, try email
     if (!user) {
-      const { data: userByEmail } = await supabase
+      const { data: userByEmail } = await supabaseAdmin
         .from('users')
         .select('*')
         .eq('email', inputValue)

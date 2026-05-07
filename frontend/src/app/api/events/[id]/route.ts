@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // GET /api/events/[id] - Get single event with signups count
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const { data: event, error } = await supabase
+    const { data: event, error } = await supabaseAdmin
       .from('volunteer_events')
       .select(`
         *,
@@ -25,7 +25,7 @@ export async function GET(
     }
 
     // Get signup count
-    const { count } = await supabase
+    const { count } = await supabaseAdmin
       .from('event_signups')
       .select('*', { count: 'exact', head: true })
       .eq('event_id', id)
@@ -50,7 +50,7 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('volunteer_events')
       .update({
         organization_id: body.organization_id,
@@ -88,7 +88,7 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('volunteer_events')
       .update({ is_active: false })
       .eq('id', id);

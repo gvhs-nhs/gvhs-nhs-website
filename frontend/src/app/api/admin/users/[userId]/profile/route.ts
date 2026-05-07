@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 import { decryptData } from '@/lib/encryption';
 
 export async function GET(
@@ -12,7 +12,7 @@ export async function GET(
 
     try {
       // Get user basic info - try multiple possible ID fields
-      let { data: userData, error: userError } = await supabase
+      let { data: userData, error: userError } = await supabaseAdmin
         .from('users')
         .select('*')
         .eq('user_id', userId)
@@ -23,7 +23,7 @@ export async function GET(
       // If not found, try with unmasked/decrypted ID lookup
       if (userError || !user) {
         // Try to find user by checking if this might be a masked ID
-        const { data: allUsers } = await supabase
+        const { data: allUsers } = await supabaseAdmin
           .from('users')
           .select('user_id, first_name, last_name, email, created_at');
 
@@ -110,7 +110,7 @@ export async function GET(
       // Get the actual user ID for session queries
       const actualUserId = user.user_id.includes(':') ? decryptData(user.user_id) : user.user_id;
 
-      const { data: sessions, error } = await supabase
+      const { data: sessions, error } = await supabaseAdmin
         .from('session_history')
         .select('duration_ms')
         .eq('user_id', actualUserId);
@@ -143,7 +143,7 @@ export async function GET(
       // Get the actual user ID for session queries
       const actualUserId = user.user_id.includes(':') ? decryptData(user.user_id) : user.user_id;
 
-      const result = await supabase
+      const result = await supabaseAdmin
         .from('session_history')
         .select('id, user_id, checked_in_at, checked_out_at, duration_ms, forced_by_admin, created_at')
         .eq('user_id', actualUserId)
@@ -159,7 +159,7 @@ export async function GET(
     let volunteerInterests = null;
     let volunteerError = null;
     try {
-      const result = await supabase
+      const result = await supabaseAdmin
         .from('volunteer_interest_submissions')
         .select(`
           *,
@@ -177,7 +177,7 @@ export async function GET(
     let suggestions = null;
     let suggestionsError = null;
     try {
-      const result = await supabase
+      const result = await supabaseAdmin
         .from('opportunity_suggestions')
         .select('*')
         .eq('nhs_user_id', userId)
@@ -192,7 +192,7 @@ export async function GET(
     let monthlyService = null;
     let monthlyServiceError = null;
     try {
-      const result = await supabase
+      const result = await supabaseAdmin
         .from('monthly_service_submissions')
         .select('*')
         .eq('user_id', userId)
@@ -208,14 +208,14 @@ export async function GET(
     let ispError = null;
     try {
       // First get the user's project
-      const { data: project } = await supabase
+      const { data: project } = await supabaseAdmin
         .from('independent_projects')
         .select('id, project_title, status')
         .eq('user_id', userId)
         .single();
 
       if (project) {
-        const { data: checkins, error } = await supabase
+        const { data: checkins, error } = await supabaseAdmin
           .from('isp_checkins')
           .select('*')
           .eq('project_id', project.id)
@@ -235,7 +235,7 @@ export async function GET(
     let eventSignups = null;
     let eventSignupsError = null;
     try {
-      const result = await supabase
+      const result = await supabaseAdmin
         .from('event_signups')
         .select(`
           *,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // POST /api/checkin/admin/force-checkout - Force checkout user (admin only)
 export async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the active check-in and user info
-    const { data: activeCheckin, error: fetchError } = await supabase
+    const { data: activeCheckin, error: fetchError } = await supabaseAdmin
       .from('active_checkins')
       .select(`
         *,
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const sessionDuration = checkedOutAt.getTime() - checkedInAt.getTime()
 
     // Add to session history with admin flag
-    const { error: historyError } = await supabase
+    const { error: historyError } = await supabaseAdmin
       .from('session_history')
       .insert({
         user_id: userId,
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Remove from active check-ins
-    const { error: removeError } = await supabase
+    const { error: removeError } = await supabaseAdmin
       .from('active_checkins')
       .delete()
       .eq('user_id', userId)

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
     try {
       // First check if user exists
-      const { data: user, error } = await supabase
+      const { data: user, error } = await supabaseAdmin
         .from('users')
         .select('*')
         .eq('user_id', userId)
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
 
     try {
       // Update user's highlighted subjects
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('users')
         .update({
           highlighted_subjects: highlightedSubjects,

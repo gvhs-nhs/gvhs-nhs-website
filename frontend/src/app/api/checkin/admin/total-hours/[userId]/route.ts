@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 export async function GET(
   _request: NextRequest,
@@ -8,7 +8,7 @@ export async function GET(
   const { userId } = await params;
 
   try {
-    const { data: sessions, error } = await supabase
+    const { data: sessions, error } = await supabaseAdmin
       .from('session_history')
       .select('duration_ms')
       .eq('user_id', userId)

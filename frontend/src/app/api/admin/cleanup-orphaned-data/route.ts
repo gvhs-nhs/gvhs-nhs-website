@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 interface CleanupResults {
   before: Record<string, number>;
@@ -40,7 +40,7 @@ export async function POST(_request: NextRequest) {
 
 
     // Get all valid user IDs
-    const { data: validUsers, error: usersError } = await supabase
+    const { data: validUsers, error: usersError } = await supabaseAdmin
       .from('users')
       .select('user_id')
 
@@ -51,7 +51,7 @@ export async function POST(_request: NextRequest) {
     const validUserIds = validUsers?.map(u => u.user_id) || []
 
     // Clean up session_history
-    const { data: orphanedSessions, error: sessionHistoryError } = await supabase
+    const { data: orphanedSessions, error: sessionHistoryError } = await supabaseAdmin
       .from('session_history')
       .select('user_id')
       .not('user_id', 'in', `(${validUserIds.map(id => `"${id}"`).join(',')})`)
@@ -61,7 +61,7 @@ export async function POST(_request: NextRequest) {
     } else {
       const orphanedSessionIds = orphanedSessions?.map(s => s.user_id) || []
       if (orphanedSessionIds.length > 0) {
-        const { error: deleteSessionError } = await supabase
+        const { error: deleteSessionError } = await supabaseAdmin
           .from('session_history')
           .delete()
           .in('user_id', orphanedSessionIds)
@@ -75,7 +75,7 @@ export async function POST(_request: NextRequest) {
     }
 
     // Clean up checkin_sessions
-    const { data: orphanedCheckins, error: checkinSessionsError } = await supabase
+    const { data: orphanedCheckins, error: checkinSessionsError } = await supabaseAdmin
       .from('checkin_sessions')
       .select('user_id')
       .not('user_id', 'in', `(${validUserIds.map(id => `"${id}"`).join(',')})`)
@@ -85,7 +85,7 @@ export async function POST(_request: NextRequest) {
     } else {
       const orphanedCheckinIds = orphanedCheckins?.map(s => s.user_id) || []
       if (orphanedCheckinIds.length > 0) {
-        const { error: deleteCheckinError } = await supabase
+        const { error: deleteCheckinError } = await supabaseAdmin
           .from('checkin_sessions')
           .delete()
           .in('user_id', orphanedCheckinIds)
@@ -99,7 +99,7 @@ export async function POST(_request: NextRequest) {
     }
 
     // Clean up opportunity_suggestions
-    const { data: orphanedSuggestions, error: suggestionsError } = await supabase
+    const { data: orphanedSuggestions, error: suggestionsError } = await supabaseAdmin
       .from('opportunity_suggestions')
       .select('nhs_user_id')
       .not('nhs_user_id', 'in', `(${validUserIds.map(id => `"${id}"`).join(',')})`)
@@ -109,7 +109,7 @@ export async function POST(_request: NextRequest) {
     } else {
       const orphanedSuggestionIds = orphanedSuggestions?.map(s => s.nhs_user_id) || []
       if (orphanedSuggestionIds.length > 0) {
-        const { error: deleteSuggestionsError } = await supabase
+        const { error: deleteSuggestionsError } = await supabaseAdmin
           .from('opportunity_suggestions')
           .delete()
           .in('nhs_user_id', orphanedSuggestionIds)
@@ -123,7 +123,7 @@ export async function POST(_request: NextRequest) {
     }
 
     // Clean up school_visit_signups
-    const { data: orphanedVisits, error: visitsError } = await supabase
+    const { data: orphanedVisits, error: visitsError } = await supabaseAdmin
       .from('school_visit_signups')
       .select('nhs_user_id')
       .not('nhs_user_id', 'in', `(${validUserIds.map(id => `"${id}"`).join(',')})`)
@@ -133,7 +133,7 @@ export async function POST(_request: NextRequest) {
     } else {
       const orphanedVisitIds = orphanedVisits?.map(s => s.nhs_user_id) || []
       if (orphanedVisitIds.length > 0) {
-        const { error: deleteVisitsError } = await supabase
+        const { error: deleteVisitsError } = await supabaseAdmin
           .from('school_visit_signups')
           .delete()
           .in('nhs_user_id', orphanedVisitIds)
@@ -147,7 +147,7 @@ export async function POST(_request: NextRequest) {
     }
 
     // Clean up active_checkins
-    const { data: orphanedActive, error: activeError } = await supabase
+    const { data: orphanedActive, error: activeError } = await supabaseAdmin
       .from('active_checkins')
       .select('user_id')
       .not('user_id', 'in', `(${validUserIds.map(id => `"${id}"`).join(',')})`)
@@ -157,7 +157,7 @@ export async function POST(_request: NextRequest) {
     } else {
       const orphanedActiveIds = orphanedActive?.map(s => s.user_id) || []
       if (orphanedActiveIds.length > 0) {
-        const { error: deleteActiveError } = await supabase
+        const { error: deleteActiveError } = await supabaseAdmin
           .from('active_checkins')
           .delete()
           .in('user_id', orphanedActiveIds)

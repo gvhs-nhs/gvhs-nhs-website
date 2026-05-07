@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // POST /api/checkin/logout-all - Force logout all users
 export async function POST(_request: NextRequest) {
   try {
     // Get all active check-ins to create session records
-    const { data: activeCheckins, error: fetchError } = await supabase
+    const { data: activeCheckins, error: fetchError } = await supabaseAdmin
       .from('active_checkins')
       .select('*')
 
@@ -36,7 +36,7 @@ export async function POST(_request: NextRequest) {
 
     // Add all sessions to history if there are any
     if (sessionRecords.length > 0) {
-      const { error: historyError } = await supabase
+      const { error: historyError } = await supabaseAdmin
         .from('session_history')
         .insert(sessionRecords)
 
@@ -50,7 +50,7 @@ export async function POST(_request: NextRequest) {
     }
 
     // Remove all active check-ins
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await supabaseAdmin
       .from('active_checkins')
       .delete()
       .neq('user_id', '') // Delete all rows (neq with empty string matches all)

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // POST /api/checkin/checkout - Check out user
 export async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the active check-in
-    const { data: activeCheckin, error: fetchError } = await supabase
+    const { data: activeCheckin, error: fetchError } = await supabaseAdmin
       .from('active_checkins')
       .select('*')
       .eq('user_id', userId)
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     const sessionDuration = checkedOutAt.getTime() - checkedInAt.getTime()
 
     // Add to session history
-    const { error: historyError } = await supabase
+    const { error: historyError } = await supabaseAdmin
       .from('session_history')
       .insert({
         user_id: userId,
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Remove from active check-ins
-    const { error: removeError } = await supabase
+    const { error: removeError } = await supabaseAdmin
       .from('active_checkins')
       .delete()
       .eq('user_id', userId)

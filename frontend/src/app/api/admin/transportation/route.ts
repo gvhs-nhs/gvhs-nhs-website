@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // Mock transportation data for admin view
 const mockTransportationData = {
@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
 
     try {
       // Try to get data from database
-      const { data: transportationRequests, error } = await supabase
+      const { data: transportationRequests, error } = await supabaseAdmin
         .from('nhs_transportation_requests')
         .select(`
           *,

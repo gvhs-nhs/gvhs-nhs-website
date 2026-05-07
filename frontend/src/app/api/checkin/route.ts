@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 
 // POST /api/checkin - Check in user
 export async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is already checked in
-    const { data: existingCheckin } = await supabase
+    const { data: existingCheckin } = await supabaseAdmin
       .from('active_checkins')
       .select('*')
       .eq('user_id', userId)
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     // Check in the user
     const checkedInAt = new Date().toISOString()
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('active_checkins')
       .insert({
         user_id: userId,

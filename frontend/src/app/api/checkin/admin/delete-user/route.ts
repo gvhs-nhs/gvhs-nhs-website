@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 import { verifyAdminSession } from '@/lib/auth-admin'
 
 export async function DELETE(request: NextRequest) {
@@ -24,37 +24,37 @@ export async function DELETE(request: NextRequest) {
 
     const deletedTables = []
 
-    const { error: activeCheckinsError } = await supabase
+    const { error: activeCheckinsError } = await supabaseAdmin
       .from('active_checkins')
       .delete()
       .eq('user_id', userId)
     if (!activeCheckinsError) deletedTables.push('active_checkins')
 
-    const { error: sessionHistoryError } = await supabase
+    const { error: sessionHistoryError } = await supabaseAdmin
       .from('session_history')
       .delete()
       .eq('user_id', userId)
     if (!sessionHistoryError) deletedTables.push('session_history')
 
-    const { error: checkinSessionsError } = await supabase
+    const { error: checkinSessionsError } = await supabaseAdmin
       .from('checkin_sessions')
       .delete()
       .eq('user_id', userId)
     if (!checkinSessionsError) deletedTables.push('checkin_sessions')
 
-    const { error: suggestionsError } = await supabase
+    const { error: suggestionsError } = await supabaseAdmin
       .from('opportunity_suggestions')
       .delete()
       .eq('nhs_user_id', userId)
     if (!suggestionsError) deletedTables.push('opportunity_suggestions')
 
-    const { error: schoolVisitsError } = await supabase
+    const { error: schoolVisitsError } = await supabaseAdmin
       .from('school_visit_signups')
       .delete()
       .eq('nhs_user_id', userId)
     if (!schoolVisitsError) deletedTables.push('school_visit_signups')
 
-    const { error: usersError } = await supabase
+    const { error: usersError } = await supabaseAdmin
       .from('users')
       .delete()
       .eq('user_id', userId)

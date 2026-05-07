@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function GET(_request: NextRequest) {
   try {
     try {
-      const { data: events, error } = await supabase
+      const { data: events, error } = await supabaseAdmin
         .from('volunteer_events')
         .select('*')
         .order('created_at', { ascending: false });
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert event into database
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('volunteer_events')
       .insert({
         title,

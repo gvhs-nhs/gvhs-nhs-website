@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ tutoringSubjects: [], highlightedSubjects: [] });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('user_tutoring_subjects')
       .select('tutoring_subjects, highlighted_subjects')
       .eq('user_id', userId)
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('user_tutoring_subjects')
       .upsert({
         user_id: userId,

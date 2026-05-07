@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 import type { CalendarEvent } from '@/lib/types';
 
 // GET /api/events/calendar - Get events formatted for FullCalendar

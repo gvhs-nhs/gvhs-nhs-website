@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // POST /api/checkin/report-issue - Submit a check-in issue report
 export async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert the issue report into the database
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('checkin_issue_reports')
       .insert({
         user_id: userId,
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 // GET /api/checkin/report-issue - Get all issue reports (for admin)
 export async function GET() {
   try {
-    const { data: reports, error } = await supabase
+    const { data: reports, error } = await supabaseAdmin
       .from('checkin_issue_reports')
       .select('*')
       .order('created_at', { ascending: false });

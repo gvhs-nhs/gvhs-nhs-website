@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert suggestion into database
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('opportunity_suggestions')
       .insert({
         nhs_user_id: nhsUserId,
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(_request: NextRequest) {
   try {
-    const { data: suggestions, error } = await supabase
+    const { data: suggestions, error } = await supabaseAdmin
       .from('opportunity_suggestions')
       .select('*')
       .order('created_at', { ascending: false });

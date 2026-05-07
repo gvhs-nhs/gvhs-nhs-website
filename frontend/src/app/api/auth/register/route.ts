@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-server'
 import bcrypt from 'bcryptjs'
 import { encryptData, decryptData } from '@/lib/encryption'
 import { z } from 'zod'
@@ -48,11 +48,11 @@ export async function POST(request: NextRequest) {
     const cleanEmail = email.toLowerCase().trim();
 
     // Check if email is already taken
-    const { data: existingEmail } = await supabase
+    const { data: existingEmail } = await supabaseAdmin
       .from('users')
       .select('email')
       .eq('email', cleanEmail)
-      .single()
+      .maybeSingle()
 
     if (existingEmail) {
       return NextResponse.json({
@@ -63,12 +63,12 @@ export async function POST(request: NextRequest) {
     const fullName = `${firstName} ${lastName}`
 
     // Check if user with this name already exists
-    const { data: existingUserWithName } = await supabase
+    const { data: existingUserWithName } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('first_name', firstName)
       .eq('last_name', lastName)
-      .single()
+      .maybeSingle()
 
     if (existingUserWithName) {
       return NextResponse.json({
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     // Check if the custom user ID is already taken
     // User IDs are encrypted with random salt, so we must decrypt all and compare
-    const { data: allUsers } = await supabase
+    const { data: allUsers } = await supabaseAdmin
       .from('users')
       .select('user_id')
 
@@ -117,14 +117,14 @@ export async function POST(request: NextRequest) {
     let newUser = null;
     let createError = null;
 
-    const { data: d1, error: e1 } = await supabase
+    const { data: d1, error: e1 } = await supabaseAdmin
       .from('users')
       .insert({ ...insertData, is_approved: true })
       .select()
       .single()
 
     if (e1 && e1.message?.includes('is_approved')) {
-      const { data: d2, error: e2 } = await supabase
+      const { data: d2, error: e2 } = await supabaseAdmin
         .from('users')
         .insert(insertData)
         .select()

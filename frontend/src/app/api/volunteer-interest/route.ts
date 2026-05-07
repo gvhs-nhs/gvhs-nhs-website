@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already expressed interest in this event
-    const { data: existingInterest } = await supabase
+    const { data: existingInterest } = await supabaseAdmin
       .from('volunteer_interest_submissions')
       .select('id')
       .eq('event_id', eventId)
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       submissionData.willing_to_take_others = willingToTakeOthers || null;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('volunteer_interest_submissions')
       .insert(submissionData)
       .select()
@@ -151,7 +151,7 @@ export async function PUT(request: NextRequest) {
       updateData.willing_to_take_others = willingToTakeOthers || null;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('volunteer_interest_submissions')
       .update(updateData)
       .eq('event_id', eventId)
@@ -190,7 +190,7 @@ export async function GET(request: NextRequest) {
     if (userId) {
       const includeDetails = searchParams.get('includeDetails') === 'true';
 
-      const { data: submissions, error } = await supabase
+      const { data: submissions, error } = await supabaseAdmin
         .from('volunteer_interest_submissions')
         .select(includeDetails ? '*' : 'event_id')
         .eq('nhs_user_id', userId);
@@ -205,7 +205,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Otherwise return all submissions with full details (for admin view)
-    const { data: submissions, error } = await supabase
+    const { data: submissions, error } = await supabaseAdmin
       .from('volunteer_interest_submissions')
       .select(`
         *,

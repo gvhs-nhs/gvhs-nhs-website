@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // GET /api/announcements/cleanup - Get count of archived announcements older than 30 days
 export async function GET() {
@@ -7,7 +7,7 @@ export async function GET() {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const { data, error, count } = await supabase
+    const { data, error, count } = await supabaseAdmin
       .from('announcements')
       .select('id, title, archived_at', { count: 'exact' })
       .eq('is_archived', true)
@@ -35,14 +35,14 @@ export async function DELETE() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     // First get count of items to delete
-    const { count: deleteCount } = await supabase
+    const { count: deleteCount } = await supabaseAdmin
       .from('announcements')
       .select('id', { count: 'exact', head: true })
       .eq('is_archived', true)
       .lt('archived_at', thirtyDaysAgo.toISOString());
 
     // Then delete them
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('announcements')
       .delete()
       .eq('is_archived', true)

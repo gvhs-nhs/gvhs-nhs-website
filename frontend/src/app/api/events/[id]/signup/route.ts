@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // GET /api/events/[id]/signup - Get signups for an event
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const { data: signups, error } = await supabase
+    const { data: signups, error } = await supabaseAdmin
       .from('event_signups')
       .select('*')
       .eq('event_id', id)
@@ -42,7 +42,7 @@ export async function POST(
     }
 
     // Check if already signed up
-    const { data: existing } = await supabase
+    const { data: existing } = await supabaseAdmin
       .from('event_signups')
       .select('id')
       .eq('event_id', id)
@@ -54,7 +54,7 @@ export async function POST(
     }
 
     // Check spots available
-    const { data: event } = await supabase
+    const { data: event } = await supabaseAdmin
       .from('volunteer_events')
       .select('spots_available, spots_filled')
       .eq('id', id)
@@ -65,7 +65,7 @@ export async function POST(
     }
 
     // Create signup
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('event_signups')
       .insert({
         event_id: id,
@@ -83,7 +83,7 @@ export async function POST(
     }
 
     // Update spots_filled
-    await supabase
+    await supabaseAdmin
       .from('volunteer_events')
       .update({ spots_filled: (event?.spots_filled || 0) + 1 })
       .eq('id', id);
@@ -109,7 +109,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'User ID required' }, { status: 400 });
     }
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('event_signups')
       .delete()
       .eq('event_id', id)
@@ -121,14 +121,14 @@ export async function DELETE(
     }
 
     // Update spots_filled
-    const { data: event } = await supabase
+    const { data: event } = await supabaseAdmin
       .from('volunteer_events')
       .select('spots_filled')
       .eq('id', id)
       .single();
 
     if (event && event.spots_filled > 0) {
-      await supabase
+      await supabaseAdmin
         .from('volunteer_events')
         .update({ spots_filled: event.spots_filled - 1 })
         .eq('id', id);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // GET /api/announcements - Get announcements with optional filters
 export async function GET(request: NextRequest) {
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Title and content are required' }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('announcements')
       .insert({
         title,
@@ -116,7 +116,7 @@ export async function PUT(request: NextRequest) {
       updateData.archived_at = is_archived ? new Date().toISOString() : null;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('announcements')
       .update(updateData)
       .eq('id', id)
@@ -145,7 +145,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Announcement ID required' }, { status: 400 });
     }
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('announcements')
       .delete()
       .eq('id', id);
