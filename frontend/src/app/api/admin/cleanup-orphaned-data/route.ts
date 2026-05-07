@@ -21,12 +21,12 @@ export async function POST(_request: NextRequest) {
 
     // First, get count of records before cleanup
     const beforeCounts = await Promise.all([
-      supabase.from('users').select('user_id', { count: 'exact' }),
-      supabase.from('session_history').select('id', { count: 'exact' }),
-      supabase.from('checkin_sessions').select('id', { count: 'exact' }),
-      supabase.from('opportunity_suggestions').select('id', { count: 'exact' }),
-      supabase.from('school_visit_signups').select('id', { count: 'exact' }),
-      supabase.from('active_checkins').select('user_id', { count: 'exact' })
+      supabaseAdmin.from('users').select('user_id', { count: 'exact' }),
+      supabaseAdmin.from('session_history').select('id', { count: 'exact' }),
+      supabaseAdmin.from('checkin_sessions').select('id', { count: 'exact' }),
+      supabaseAdmin.from('opportunity_suggestions').select('id', { count: 'exact' }),
+      supabaseAdmin.from('school_visit_signups').select('id', { count: 'exact' }),
+      supabaseAdmin.from('active_checkins').select('user_id', { count: 'exact' })
     ])
 
     cleanupResults.before = {
@@ -172,12 +172,12 @@ export async function POST(_request: NextRequest) {
 
     // Get count of records after cleanup
     const afterCounts = await Promise.all([
-      supabase.from('users').select('user_id', { count: 'exact' }),
-      supabase.from('session_history').select('id', { count: 'exact' }),
-      supabase.from('checkin_sessions').select('id', { count: 'exact' }),
-      supabase.from('opportunity_suggestions').select('id', { count: 'exact' }),
-      supabase.from('school_visit_signups').select('id', { count: 'exact' }),
-      supabase.from('active_checkins').select('user_id', { count: 'exact' })
+      supabaseAdmin.from('users').select('user_id', { count: 'exact' }),
+      supabaseAdmin.from('session_history').select('id', { count: 'exact' }),
+      supabaseAdmin.from('checkin_sessions').select('id', { count: 'exact' }),
+      supabaseAdmin.from('opportunity_suggestions').select('id', { count: 'exact' }),
+      supabaseAdmin.from('school_visit_signups').select('id', { count: 'exact' }),
+      supabaseAdmin.from('active_checkins').select('user_id', { count: 'exact' })
     ])
 
     cleanupResults.after = {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { verifyAdminSession } from '@/lib/auth-admin';
 
-const supabase = createClient(
+const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
             .from('system_settings')
             .select('value')
             .eq('key', 'require_approval')
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { requireApproval } = body;
 
-        const { error } = await supabase
+        const { error } = await supabaseAdmin
             .from('system_settings')
             .upsert({
                 key: 'require_approval',

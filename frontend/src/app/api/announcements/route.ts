@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const archivedOnly = searchParams.get('archived_only') === 'true';
 
     // Build base query with read count
-    let query = supabase
+    let query = supabaseAdmin
       .from('announcements')
       .select(`
         *,
