@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error in confirm-checkin API:', error)
     return NextResponse.json(
-      { error: 'Failed to check in user' },
+      { error: 'Failed to check in user', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }
