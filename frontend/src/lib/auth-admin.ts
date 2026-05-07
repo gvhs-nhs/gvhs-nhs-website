@@ -43,8 +43,7 @@ export async function clearAdminCookie() {
 }
 
 export async function verifyAdminSession(request: NextRequest): Promise<NextResponse | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('admin_session')?.value;
+  const token = request.cookies.get('admin_session')?.value;
 
   if (!token || !(await verifyAdminToken(token))) {
     return NextResponse.json(

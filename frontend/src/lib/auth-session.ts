@@ -49,8 +49,7 @@ export async function getUserFromSession(): Promise<UserSessionPayload | null> {
 }
 
 export async function verifyUserSession(request: NextRequest): Promise<UserSessionPayload | null> {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('user_session')?.value;
+    const token = request.cookies.get('user_session')?.value;
 
     if (!token) return null;
     return verifyUserToken(token);
