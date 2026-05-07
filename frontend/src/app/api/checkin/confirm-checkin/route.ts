@@ -26,14 +26,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized. Please login to check in.' }, { status: 401 });
     }
 
-    const { userId } = session; // Use trusted ID from session
+    const { userId } = session;
 
-    // Check if user is already checked in (using plain text ID in active_checkins)
-    const { data: existingCheckin } = await supabaseAdmin
+    // Check if user is already checked in
+    const { data: existingCheckin, error: selectError } = await supabaseAdmin
       .from('active_checkins')
       .select('*')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
+
+    if (selectError) {
+      return NextResponse.json(
+        { error: 'DB select failed', detail: selectError.message },
+        { status: 500 }
+      )
+    }
 
     if (existingCheckin) {
       return NextResponse.json(
@@ -52,9 +59,8 @@ export async function POST(request: NextRequest) {
       })
 
     if (checkinError) {
-      console.error('Error checking in user:', checkinError)
       return NextResponse.json(
-        { error: 'Failed to check in user' },
+        { error: 'Insert failed', detail: checkinError.message },
         { status: 500 }
       )
     }
@@ -66,9 +72,8 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error in confirm-checkin API:', error)
     return NextResponse.json(
-      { error: 'Failed to check in user' },
+      { error: 'Unhandled exception', detail: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }
