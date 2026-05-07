@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
       .from('active_checkins')
       .insert({
         user_id: userId,
+        username: `${user.first_name} ${user.last_name}`.trim(),
         checked_in_at: checkedInAt
       })
 

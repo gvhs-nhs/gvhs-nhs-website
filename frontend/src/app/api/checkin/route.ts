@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-server'
+import { decryptData } from '@/lib/encryption'
 
 // POST /api/checkin - Check in user
 export async function POST(request: NextRequest) {
@@ -27,12 +28,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Look up user's name
+    let username = userId;
+    const { data: allUsers } = await supabaseAdmin
+      .from('users')
+      .select('user_id, first_name, last_name')
+
+    if (allUsers) {
+      for (const u of allUsers) {
+        try {
+          if (decryptData(u.user_id) === userId) {
+            username = `${u.first_name} ${u.last_name}`.trim();
+            break;
+          }
+        } catch { continue; }
+      }
+    }
+
     // Check in the user
     const checkedInAt = new Date().toISOString()
     const { error } = await supabaseAdmin
       .from('active_checkins')
       .insert({
         user_id: userId,
+        username,
         checked_in_at: checkedInAt
       })
 
