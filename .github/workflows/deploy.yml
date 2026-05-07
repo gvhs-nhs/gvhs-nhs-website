@@ -23,6 +23,19 @@ jobs:
       - name: Install Netlify CLI
         run: npm install -g netlify-cli
 
+      - name: Set Netlify environment variables
+        env:
+          NETLIFY_SITE_ID: 8beaade1-6ba9-4efa-80e1-53c3069cd8ab
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          netlify env:set NEXT_PUBLIC_SUPABASE_URL "https://pehajhulwwfqedlwdchu.supabase.co" --force
+          netlify env:set NEXT_PUBLIC_SUPABASE_ANON_KEY "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" --force
+          netlify env:set SUPABASE_SERVICE_ROLE_KEY "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" --force
+          netlify env:set ENCRYPTION_KEY "${{ secrets.ENCRYPTION_KEY }}" --force
+          netlify env:set ADMIN_SECRET_KEY "${{ secrets.ADMIN_SECRET_KEY }}" --force
+          netlify env:set USER_SESSION_SECRET "${{ secrets.USER_SESSION_SECRET }}" --force
+          netlify env:set ADMIN_PIN "${{ secrets.ADMIN_PIN }}" --force
+
       - name: Build and Deploy
         working-directory: frontend
         env:
