@@ -17,7 +17,7 @@ const registerSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters").regex(/^[a-zA-Z\s-]+$/, "Name contains invalid characters").max(50),
   lastName: z.string().min(2, "Last name must be at least 2 characters").regex(/^[a-zA-Z\s-]+$/, "Name contains invalid characters").max(50),
   customUserId: z.string().length(6, "User ID must be exactly 6 digits").regex(/^\d+$/, "User ID must be numeric"),
-  email: z.string().email("Invalid email address").refine(val => val.endsWith('@gvsd.org'), "Must be a @gvsd.org school email"),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters").max(100),
 })
 

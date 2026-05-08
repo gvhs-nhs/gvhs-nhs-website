@@ -101,7 +101,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   };
 
   const passwordsMatch = formData.password === formData.confirmPassword;
-  const validEmail = formData.email.trim().endsWith('@gvsd.org');
+  const validEmail = formData.email.trim().includes('@');
   const isFormValid =
     formData.userId.length === 6 &&
     formData.firstName.trim() &&
@@ -200,7 +200,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                   <Mail className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
-              <p className="text-xs text-gray-500">Must be your @gvsd.org email</p>
+              <p className="text-xs text-gray-500">Recommended: your @gvsd.org school email</p>
             </div>
 
             {/* Password Fields */}
