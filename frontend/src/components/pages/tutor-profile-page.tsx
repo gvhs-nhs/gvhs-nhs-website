@@ -310,7 +310,6 @@ export function TutorProfilePage() {
           : responseData.message;
 
         setMessage(successMessage);
-        setIsEditingSubjects(false);
         setHasUnsavedSubjects(false);
         setOriginalTutoringSubjects([...tutoringSubjects]);
 
@@ -728,7 +727,10 @@ export function TutorProfilePage() {
                         </Button>
                         <Button
                           size="sm"
-                          onClick={handleSaveSubjects}
+                          onClick={async () => {
+                            await handleSaveSubjects();
+                            setIsEditingSubjects(false);
+                          }}
                           className="bg-royal-blue hover:bg-blue-700"
                         >
                           <Save className="w-4 h-4 mr-2" />

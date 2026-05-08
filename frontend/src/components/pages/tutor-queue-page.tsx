@@ -5,11 +5,12 @@ import React, { useState, useEffect } from "react";
 interface CheckedInUser {
   user_id: string;
   checked_in_at: string;
-  users: {
+  username?: string;
+  users?: {
     first_name: string;
     last_name: string;
     highlighted_subjects?: string[];
-  };
+  } | null;
 }
 
 interface UserSubjects {
@@ -158,9 +159,11 @@ export function TutorQueuePage() {
                 )}
                 {activeUsers.map((user, index) => {
                   const highlightedSubjects = userHighlightedSubjects[user.user_id] || [];
-                  // Properly format names with proper casing
-                  const firstName = user.users.first_name?.charAt(0).toUpperCase() + user.users.first_name?.slice(1).toLowerCase() || '';
-                  const lastName = user.users.last_name?.charAt(0).toUpperCase() + user.users.last_name?.slice(1).toLowerCase() || '';
+                  // Properly format names with proper casing, with fallback to username
+                  const rawFirst = user.users?.first_name || user.username?.split(' ')[0] || 'Unknown';
+                  const rawLast = user.users?.last_name || user.username?.split(' ').slice(1).join(' ') || '';
+                  const firstName = rawFirst.charAt(0).toUpperCase() + rawFirst.slice(1).toLowerCase();
+                  const lastName = rawLast ? rawLast.charAt(0).toUpperCase() + rawLast.slice(1).toLowerCase() : '';
 
                   return (
                     <div
