@@ -1,8 +1,12 @@
-name: Deploy to Netlify
+name: Deploy to Vercel
 
 on:
   push:
     branches: [main]
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   deploy:
@@ -16,38 +20,17 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel Environment
         working-directory: frontend
-        run: npm ci
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Install Netlify CLI
-        run: npm install -g netlify-cli
-
-      - name: Set Netlify environment variables
-        env:
-          NETLIFY_SITE_ID: 8beaade1-6ba9-4efa-80e1-53c3069cd8ab
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: |
-          netlify env:set NEXT_PUBLIC_SUPABASE_URL "https://pehajhulwwfqedlwdchu.supabase.co" --force
-          netlify env:set NEXT_PUBLIC_SUPABASE_ANON_KEY "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" --force
-          netlify env:set SUPABASE_SERVICE_ROLE_KEY "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" --force
-          netlify env:set ENCRYPTION_KEY "${{ secrets.ENCRYPTION_KEY }}" --force
-          netlify env:set ADMIN_SECRET_KEY "${{ secrets.ADMIN_SECRET_KEY }}" --force
-          netlify env:set USER_SESSION_SECRET "${{ secrets.USER_SESSION_SECRET }}" --force
-          netlify env:set ADMIN_PIN "${{ secrets.ADMIN_PIN }}" --force
-
-      - name: Build and Deploy
+      - name: Build
         working-directory: frontend
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: https://pehajhulwwfqedlwdchu.supabase.co
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
-          USER_SESSION_SECRET: ${{ secrets.USER_SESSION_SECRET }}
-          ADMIN_PIN: ${{ secrets.ADMIN_PIN }}
-          NETLIFY_SITE_ID: 8beaade1-6ba9-4efa-80e1-53c3069cd8ab
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: |
-          npm run build
-          netlify deploy --prod --dir=.next
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Production
+        working-directory: frontend
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
