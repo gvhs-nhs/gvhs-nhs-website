@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/ui/navbar";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
         <AuthProvider>
           <ScrollToTop />
           <Navbar />
+          <OnboardingGate />
           <main className="pt-16">
             {children}
           </main>
