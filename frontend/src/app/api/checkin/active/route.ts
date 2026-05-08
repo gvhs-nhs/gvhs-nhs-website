@@ -27,10 +27,12 @@ export async function GET(_request: NextRequest) {
     // Fallback: if join fails (missing FK), return checkins without user details
     const { data: checkins } = await supabaseAdmin
       .from('active_checkins')
-      .select('user_id, checked_in_at')
+      .select('user_id, checked_in_at, username')
       .order('checked_in_at', { ascending: false })
 
-    return NextResponse.json(checkins || [])
+    // Add null users property so frontend can safely use optional chaining
+    const checkinsWithNullUsers = (checkins || []).map(c => ({ ...c, users: null }))
+    return NextResponse.json(checkinsWithNullUsers)
   } catch {
     return NextResponse.json([])
   }
